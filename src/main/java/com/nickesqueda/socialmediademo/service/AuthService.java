@@ -42,7 +42,7 @@ public class AuthService {
     // construct a new user entity and save it in the DB.
     UserEntity user = new UserEntity();
     user.setUsername(username);
-    user.setPassword(passwordEncoder.encode(password));
+    user.setPasswordHash(passwordEncoder.encode(password));
     // TODO: separate logic for different roles (admin/business user/etc.)
     Role role = roleRepository.findByRoleName("USER").orElseThrow(RoleNotFoundException::new);
     Set<Role> roles = Set.of(role);

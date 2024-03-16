@@ -1,8 +1,6 @@
 package com.nickesqueda.socialmediademo.security;
 
-import com.nickesqueda.socialmediademo.entity.Role;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
-import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             .findByUsername(username)
             .orElseThrow(
                 () -> new UsernameNotFoundException("Username " + username + " not found."));
-    return new User(user.getUsername(), user.getPassword(), user.getRoles());
+    return new User(user.getUsername(), user.getPasswordHash(), user.getRoles());
   }
 }

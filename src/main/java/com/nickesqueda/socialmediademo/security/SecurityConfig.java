@@ -45,10 +45,10 @@ public class SecurityConfig {
               authorizationManagerRequestMatcherRegistry
                   .requestMatchers("/api/auth/**")
                   .permitAll()
+                  .requestMatchers(HttpMethod.GET)
+                  .permitAll()
                   .anyRequest()
                   .authenticated();
-              // .requestMatchers(HttpMethod.GET)
-              // .permitAll()
             })
         .csrf(AbstractHttpConfigurer::disable) // TODO: enable CSRF protection.
         .httpBasic(Customizer.withDefaults())

@@ -1,13 +1,13 @@
 package com.nickesqueda.socialmediademo.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
-import java.util.Set;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -19,7 +19,7 @@ public class UserEntity {
   private String username;
 
   @Column(nullable = false)
-  private String password;
+  private String passwordHash;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
@@ -27,4 +27,9 @@ public class UserEntity {
       joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
       inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Collection<Role> roles;
+
+  public UserEntity(String username, String passwordHash, Collection<Role> roles) {
+    this.username = username;
+    this.passwordHash = passwordHash;
+  }
 }

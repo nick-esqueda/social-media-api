@@ -13,7 +13,7 @@ import java.util.Map;
  * TODO: set roleName to not writeable? (only use the pre-defined roles from table)
  */
 @Data
-@NoArgsConstructor
+@NoArgsConstructor // TODO: is this needed? if only for Jackson, replace with DTO and remove this.
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
@@ -26,6 +26,10 @@ public class Role implements GrantedAuthority {
 
   public Role(Map<String, String> mapRepresentationOfRoleObj) {
     this.roleName = mapRepresentationOfRoleObj.get("roleName");
+  }
+
+  public Role(String roleName) {
+    this.roleName = roleName;
   }
 
   @Override
