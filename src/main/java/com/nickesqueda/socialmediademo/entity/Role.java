@@ -24,6 +24,7 @@ public class Role implements GrantedAuthority {
   @Column(nullable = false, unique = true)
   private String roleName;
 
+  // TODO: find alternate way to create Role from JSON
   public Role(Map<String, String> mapRepresentationOfRoleObj) {
     this.roleName = mapRepresentationOfRoleObj.get("roleName");
   }

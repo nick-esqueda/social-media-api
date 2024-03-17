@@ -31,5 +31,6 @@ public class UserEntity {
   public UserEntity(String username, String passwordHash, Collection<Role> roles) {
     this.username = username;
     this.passwordHash = passwordHash;
+    this.roles = roles;
   }
 }

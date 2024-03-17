@@ -1,6 +1,5 @@
 package com.nickesqueda.socialmediademo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +21,6 @@ public class Post {
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   @OnDelete(action = OnDeleteAction.CASCADE)
-  @JsonIgnore // TODO: is this needed? - can remove if using DTO in controller
   private UserEntity user;
 
   public Post(String content, UserEntity user) {

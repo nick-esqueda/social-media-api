@@ -1,6 +1,6 @@
 package com.nickesqueda.socialmediademo.controller;
 
-import com.nickesqueda.socialmediademo.entity.Comment;
+import com.nickesqueda.socialmediademo.dto.CommentDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +13,13 @@ public class CommentsController {
     this.commentService = commentService;
   }
 
-  // TODO: use DTO instead of Entity objects in controller params.
-
   @GetMapping("/{commentId}")
-  public Comment getComment(@PathVariable("commentId") int commentId) {
+  public CommentDto getComment(@PathVariable("commentId") int commentId) {
     return commentService.getComment(commentId);
   }
 
   @PutMapping("/{commentId}")
-  public Comment updateComment(@PathVariable("commentId") int commentId, @RequestBody Comment updatedComment) {
+  public CommentDto updateComment(@PathVariable("commentId") int commentId, @RequestBody CommentDto updatedComment) {
     return commentService.updateComment(commentId, updatedComment);
   }
 

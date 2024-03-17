@@ -42,6 +42,7 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody UserCredentials userCredentials) {
     String jwt = authService.authenticateUser(userCredentials);
+    // TODO: return JSON instead of plain text
     return ResponseEntity.ok(jwt);
   }
 }

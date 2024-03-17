@@ -12,6 +12,12 @@ Principal - A subset of subject that is represented by an account, role or other
 
 User - A subset of principal usually referring to a human operator. The distinction is blurring over time because the words "user" or "user ID" are commonly interchanged with "account". However, when you need to make the distinction between the broad class of things that are principals and the subset of these that are interactive operators driving transactions in a non-deterministic fashion, "user" is the right word.
 
+## DTOs for API Contract 
+
+Use DTOs to serialize/deserialize request and response bodies.
+
+DTOs allow you to decouple your API contract from your database schema, providing a more resilient and maintainable solution. This allows for separation of concerns and prevents tight coupling between layers.
+
 ## Instructions for Running Locally
 
 - install & setup mysql
