@@ -1,8 +1,6 @@
-# Random TODOs
+# TODOs
 
 TODO: add created_at & updated_at columns
-
-TODO: replace Entities with DTOs in controller (decouple API contract and persistence layer)
 
 TODO: posts/comments can only be created/updated/deleted by the owner (currently auth'd user must have same userId)
 
@@ -19,6 +17,10 @@ TODO: "getCommentsByPostId", "getCommentsByUserId" - these are more idiomatic (i
 TODO: add user bio, email, other data
 
 TODO: endpoint to update user info (separate from register user. should go in UserController/Service)
+
+TODO: handle io.jsonwebtoken.ExpiredJwtException (thrown when parsing JWT in JwtFilter)
+
+TODO: AOP logging
 
 # Business Feature Ideas
 
@@ -45,6 +47,22 @@ like a chart of likes over time, most popular posts, follower chart, etc.
 
 ## 2FA & 2FA Enrollment
 
+## Admin can delete other user's posts
+
+- if the currently authenticated user is either an Admin or the author of the Post, the Post can be deleted.
+
+- Admins should still not be allowed to update other user's posts.
+
+## Post author can delete comments on the post
+
+- if the currently authenticated user is the owner of either the Post or the Comment, the Comment can be deleted.
+
+- Post authors should still not be allowed to update other user's comments on their Posts.
+
+## Banned Users
+
+- admins can ban users. set a flag on the user Entity to banned=true
+
 # Tech Feature Ideas
 
 - Custom exception handling
@@ -53,7 +71,11 @@ like a chart of likes over time, most popular posts, follower chart, etc.
 
 - Request validation
 
+- Pagination
+
 - CSRF protection
+
+- CORS enabled
 
 - Secret Management
 

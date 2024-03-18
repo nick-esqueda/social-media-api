@@ -9,6 +9,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleGenericException(RuntimeException e) {
         System.out.println("inside global generic exception handler");
-        return ResponseEntity.internalServerError().body("Unhandled exception: " + e.getMessage());
+        return ResponseEntity.internalServerError().body("Unhandled exception: " + e.toString());
     }
 }

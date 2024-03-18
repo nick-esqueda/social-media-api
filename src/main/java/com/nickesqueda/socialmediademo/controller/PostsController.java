@@ -39,6 +39,11 @@ public class PostsController {
     return commentService.getPostsComments(postId);
   }
 
+  @DeleteMapping("/{postId}/comments")
+  public void deletePostsComments(@PathVariable("postId") int postId) {
+    commentService.deletePostsComments(postId);
+  }
+
   @PostMapping("/{postId}/comments")
   public void createComment(@PathVariable("postId") int postId, @RequestBody CommentDto comment) {
     // TODO: return 201 CREATED.

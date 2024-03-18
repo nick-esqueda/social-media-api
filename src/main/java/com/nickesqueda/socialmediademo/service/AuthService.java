@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.management.relation.RoleNotFoundException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 @Service
@@ -45,17 +46,17 @@ public class AuthService {
     user.setPasswordHash(passwordEncoder.encode(password));
     // TODO: separate logic for different roles (admin/business user/etc.)
     Role role = roleRepository.findByRoleName("USER").orElseThrow(RoleNotFoundException::new);
-    Set<Role> roles = Set.of(role);
+    Collection<Role> roles = Collections.singletonList(role);
     user.setRoles(roles);
     userRepository.save(user);
 
     // populate SecurityContext with the newly authenticated user.
-    UsernamePasswordAuthenticationToken authenticationToken =
+    Authentication authentication =
         new UsernamePasswordAuthenticationToken(username, password, roles);
-    AuthUtils.populateSpringSecurityContext(authenticationToken);
+    AuthUtils.populateSpringSecurityContext(authentication);
 
     // create JWT and send in response so user can be re-authenticated.
-    return JwtUtils.createJwt(username, roles);
+    return JwtUtils.createJwt(authentication);
   }
 
   public String authenticateUser(UserCredentials userCredentials) {
@@ -71,7 +72,6 @@ public class AuthService {
     AuthUtils.populateSpringSecurityContext(authentication);
 
     // create JWT and send in response so user can be re-authenticated.
-    Collection<Role> roles = (Collection<Role>) authentication.getAuthorities();
-    return JwtUtils.createJwt(username, roles);
+    return JwtUtils.createJwt(authentication);
   }
 }

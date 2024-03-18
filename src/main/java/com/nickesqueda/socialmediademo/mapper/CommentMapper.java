@@ -7,7 +7,7 @@ public class CommentMapper {
   public static Comment toEntity(CommentDto commentDto) {
     Comment commentEntity = new Comment();
     commentEntity.setId(commentDto.getId());
-    commentEntity.setContent(commentEntity.getContent());
+    commentEntity.setContent(commentDto.getContent());
     return commentEntity;
   }
 

@@ -9,6 +9,7 @@ import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,7 @@ public class PostService {
     return posts.stream().map(PostMapper::toDto).toList();
   }
 
+  @Transactional
   public void deleteUsersPosts(int userId) {
     postRepository.deleteByUserId(userId);
   }

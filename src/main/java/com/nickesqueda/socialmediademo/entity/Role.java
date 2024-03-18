@@ -22,7 +22,7 @@ public class Role implements GrantedAuthority {
   private int id;
 
   @Column(nullable = false, unique = true)
-  private String roleName;
+  private String roleName; // TODO: is this the same as "authority"? is this field needed?
 
   // TODO: find alternate way to create Role from JSON
   public Role(Map<String, String> mapRepresentationOfRoleObj) {

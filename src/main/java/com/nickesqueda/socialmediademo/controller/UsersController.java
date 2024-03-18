@@ -39,4 +39,9 @@ public class UsersController {
   public List<CommentDto> getUsersComments(@PathVariable("userId") int userId) {
     return commentService.getUsersComments(userId);
   }
+
+  @DeleteMapping("/{userId}/comments")
+  public void deleteUsersComments(@PathVariable("userId") int userId) {
+    commentService.deleteUsersComments(userId);
+  }
 }
