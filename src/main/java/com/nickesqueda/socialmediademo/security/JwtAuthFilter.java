@@ -1,18 +1,11 @@
 package com.nickesqueda.socialmediademo.security;
 
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.impl.crypto.DefaultJwtSignatureValidator;
-import io.jsonwebtoken.impl.crypto.JwtSignatureValidator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,16 +13,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collection;
 
+import static com.nickesqueda.socialmediademo.security.SecurityConstants.*;
+
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    // TODO: extract Strings into constants.
-    String authorizationHeader = request.getHeader("Authorization");
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      String jwt = authorizationHeader.substring(7);
+
+    String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
+    if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+      String jwt = authorizationHeader.substring(BEARER.length());
 
       // JWT VALIDATION OCCURS HERE WHEN EXTRACTING CLAIMS.
       String username = JwtUtils.extractUsername(jwt);
