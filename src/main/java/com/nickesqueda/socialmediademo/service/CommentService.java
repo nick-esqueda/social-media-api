@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -30,10 +29,11 @@ public class CommentService {
   }
 
   public void createComment(int postId, CommentDto commentDto) {
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
-    Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
-        postOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
+        postRepository
+            .findById(postId)
+            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
+    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     Comment commentEntity = CommentMapper.toEntity(commentDto);
     commentEntity.setPost(postEntity);
@@ -42,9 +42,10 @@ public class CommentService {
   }
 
   public CommentDto getComment(int commentId) {
-    Optional<Comment> commentOptional = commentRepository.findById(commentId);
     Comment commentEntity =
-        commentOptional.orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
+        commentRepository
+            .findById(commentId)
+            .orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
     return CommentMapper.toDto(commentEntity);
   }
 
@@ -62,10 +63,10 @@ public class CommentService {
   }
 
   public CommentDto updateComment(int commentId, CommentDto updatedComment) {
-    Optional<Comment> commentEntityOptional = commentRepository.findById(commentId);
     Comment commentEntity =
-        commentEntityOptional.orElseThrow(
-            () -> new ResourceNotFoundException(Comment.class, commentId));
+        commentRepository
+            .findById(commentId)
+            .orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(commentEntity.getUser())) {
@@ -78,9 +79,10 @@ public class CommentService {
   }
 
   public void deleteComment(int commentId) {
-    Optional<Comment> commentOptional = commentRepository.findById(commentId);
     Comment commentEntity =
-        commentOptional.orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
+        commentRepository
+            .findById(commentId)
+            .orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(commentEntity.getUser())) {
@@ -92,9 +94,10 @@ public class CommentService {
 
   @Transactional
   public void deletePostsComments(int postId) {
-    Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
-        postOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
+        postRepository
+            .findById(postId)
+            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(postEntity.getUser())) {

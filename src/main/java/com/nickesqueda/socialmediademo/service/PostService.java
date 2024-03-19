@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PostService {
@@ -29,9 +28,10 @@ public class PostService {
   }
 
   public void createPost(int userId, PostDto postDto) {
-    Optional<UserEntity> userOptional = userRepository.findById(userId);
     UserEntity userEntity =
-        userOptional.orElseThrow(() -> new ResourceNotFoundException(UserEntity.class, userId));
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException(UserEntity.class, userId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(userEntity)) {
@@ -44,16 +44,18 @@ public class PostService {
   }
 
   public PostDto getPost(int postId) {
-    Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
-        postOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
+        postRepository
+            .findById(postId)
+            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
     return PostMapper.toDto(postEntity);
   }
 
   public PostDto updatePost(int postId, PostDto updatedPost) {
-    Optional<Post> postEntityOptional = postRepository.findById(postId);
     Post postEntity =
-        postEntityOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
+        postRepository
+            .findById(postId)
+            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(postEntity.getUser())) {
@@ -66,10 +68,10 @@ public class PostService {
   }
 
   public void deletePost(int postId) {
-    Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
-        postOptional.orElseThrow(
-            () -> new ResourceNotFoundException(Post.class, postId));
+        postRepository
+            .findById(postId)
+            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(postEntity.getUser())) {

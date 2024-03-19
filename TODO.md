@@ -8,9 +8,11 @@ TODO: add created_at & updated_at columns
 
 TODO: AOP logging
 
-TODO: custom RecordNotFoundException- should be able to pass in entity type & id #
-
 TODO: create GET /user, PUT /user, DELETE /user
+
+TODO: set the currently authenticated UserEntity to be accessed anywhere (like the Authentication object) 
+
+- could also set the "username" of the Authentication object to be the Entity id
 
 TODO: change ints to Longs for ids
 
@@ -29,6 +31,11 @@ TODO: logic for creating admin accounts. separate endpoint?
 TODO: optimize number of DB queries.
 
 TODO: see if JPA .save() is necessary when updating (i.e. postEntity.setContent(...))
+
+TODO: use id field as the jwt principal/subject. this will allow for the below method-level auth:
+
+- example: @PreAuthorize("#username == authentication.principal.username")
+- more: https://www.baeldung.com/spring-security-method-security
 
 # Business Feature Ideas
 
