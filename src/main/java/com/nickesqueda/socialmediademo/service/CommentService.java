@@ -4,12 +4,12 @@ import com.nickesqueda.socialmediademo.dto.CommentDto;
 import com.nickesqueda.socialmediademo.entity.Comment;
 import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
+import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.mapper.CommentMapper;
 import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +33,7 @@ public class CommentService {
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
     Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
-        postOptional.orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot create comment - parent postId " + postId + " not found."));
+        postOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
 
     Comment commentEntity = CommentMapper.toEntity(commentDto);
     commentEntity.setPost(postEntity);
@@ -44,9 +41,10 @@ public class CommentService {
     commentRepository.save(commentEntity);
   }
 
-  public CommentDto getComment(int id) {
-    Optional<Comment> commentOptional = commentRepository.findById(id);
-    Comment commentEntity = commentOptional.orElseThrow(EntityNotFoundException::new);
+  public CommentDto getComment(int commentId) {
+    Optional<Comment> commentOptional = commentRepository.findById(commentId);
+    Comment commentEntity =
+        commentOptional.orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
     return CommentMapper.toDto(commentEntity);
   }
 
@@ -67,9 +65,7 @@ public class CommentService {
     Optional<Comment> commentEntityOptional = commentRepository.findById(commentId);
     Comment commentEntity =
         commentEntityOptional.orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot update comment - commentId " + commentId + " not found."));
+            () -> new ResourceNotFoundException(Comment.class, commentId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(commentEntity.getUser())) {
@@ -84,8 +80,7 @@ public class CommentService {
   public void deleteComment(int commentId) {
     Optional<Comment> commentOptional = commentRepository.findById(commentId);
     Comment commentEntity =
-        commentOptional.orElseThrow(
-            () -> new EntityNotFoundException("commentId " + commentId + " not found."));
+        commentOptional.orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(commentEntity.getUser())) {
@@ -99,10 +94,7 @@ public class CommentService {
   public void deletePostsComments(int postId) {
     Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
-        postOptional.orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot delete post's comments - postId " + postId + " not found."));
+        postOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(postEntity.getUser())) {

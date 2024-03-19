@@ -3,12 +3,12 @@ package com.nickesqueda.socialmediademo.service;
 import com.nickesqueda.socialmediademo.dto.PostDto;
 import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
+import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.mapper.PostMapper;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +31,7 @@ public class PostService {
   public void createPost(int userId, PostDto postDto) {
     Optional<UserEntity> userOptional = userRepository.findById(userId);
     UserEntity userEntity =
-        userOptional.orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot create post - parent userId " + userId + " not found."));
+        userOptional.orElseThrow(() -> new ResourceNotFoundException(UserEntity.class, userId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(userEntity)) {
@@ -46,19 +43,17 @@ public class PostService {
     }
   }
 
-  public PostDto getPost(int id) {
-    Optional<Post> postOptional = postRepository.findById(id);
-    Post postEntity = postOptional.orElseThrow(EntityNotFoundException::new);
+  public PostDto getPost(int postId) {
+    Optional<Post> postOptional = postRepository.findById(postId);
+    Post postEntity =
+        postOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
     return PostMapper.toDto(postEntity);
   }
 
   public PostDto updatePost(int postId, PostDto updatedPost) {
     Optional<Post> postEntityOptional = postRepository.findById(postId);
     Post postEntity =
-        postEntityOptional.orElseThrow(
-            () ->
-                new EntityNotFoundException(
-                    "Cannot update post - postId " + postId + " not found."));
+        postEntityOptional.orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(postEntity.getUser())) {
@@ -74,7 +69,7 @@ public class PostService {
     Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
         postOptional.orElseThrow(
-            () -> new EntityNotFoundException("postId " + postId + " not found."));
+            () -> new ResourceNotFoundException(Post.class, postId));
     UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
     if (currentUser.equals(postEntity.getUser())) {
