@@ -42,7 +42,7 @@ public class PostService {
       postEntity.setUser(userEntity);
       postRepository.save(postEntity);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 
@@ -66,7 +66,7 @@ public class PostService {
       postRepository.save(postEntity);
       return PostMapper.toDto(postEntity);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 
@@ -80,7 +80,7 @@ public class PostService {
     if (currentUser.equals(postEntity.getUser())) {
       postRepository.deleteById(postId);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 
@@ -95,7 +95,7 @@ public class PostService {
     if (currentUser.getId() == userId) {
       postRepository.deleteByUserId(userId);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 }

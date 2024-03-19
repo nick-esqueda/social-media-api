@@ -77,7 +77,7 @@ public class CommentService {
       commentRepository.save(commentEntity);
       return CommentMapper.toDto(commentEntity);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 
@@ -91,7 +91,7 @@ public class CommentService {
     if (currentUser.equals(commentEntity.getUser())) {
       commentRepository.deleteById(commentId);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 
@@ -108,7 +108,7 @@ public class CommentService {
     if (currentUser.equals(postEntity.getUser())) {
       commentRepository.deleteByPostId(postId);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 
@@ -118,7 +118,7 @@ public class CommentService {
     if (currentUser.getId() == userId) {
       commentRepository.deleteByUserId(userId);
     } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
     }
   }
 }
