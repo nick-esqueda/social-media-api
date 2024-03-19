@@ -4,14 +4,12 @@ import com.nickesqueda.socialmediademo.dto.CommentDto;
 import com.nickesqueda.socialmediademo.entity.Comment;
 import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
+import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.mapper.CommentMapper;
 import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
-import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,17 +30,17 @@ public class CommentService {
   }
 
   public void createComment(int postId, CommentDto commentDto) {
+    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
     Optional<Post> postOptional = postRepository.findById(postId);
     Post postEntity =
         postOptional.orElseThrow(
             () ->
                 new EntityNotFoundException(
                     "Cannot create comment - parent postId " + postId + " not found."));
-    UserEntity userEntity = authUtils.getCurrentUserEntity();
 
     Comment commentEntity = CommentMapper.toEntity(commentDto);
     commentEntity.setPost(postEntity);
-    commentEntity.setUser(userEntity);
+    commentEntity.setUser(currentUser);
     commentRepository.save(commentEntity);
   }
 
@@ -72,23 +70,55 @@ public class CommentService {
             () ->
                 new EntityNotFoundException(
                     "Cannot update comment - commentId " + commentId + " not found."));
+    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
 
-    commentEntity.setContent(updatedComment.getContent());
-    commentRepository.save(commentEntity);
-    return CommentMapper.toDto(commentEntity);
+    if (currentUser.equals(commentEntity.getUser())) {
+      commentEntity.setContent(updatedComment.getContent());
+      commentRepository.save(commentEntity);
+      return CommentMapper.toDto(commentEntity);
+    } else {
+      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+    }
   }
 
   public void deleteComment(int commentId) {
-    commentRepository.deleteById(commentId);
+    Optional<Comment> commentOptional = commentRepository.findById(commentId);
+    Comment commentEntity =
+        commentOptional.orElseThrow(
+            () -> new EntityNotFoundException("commentId " + commentId + " not found."));
+    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+
+    if (currentUser.equals(commentEntity.getUser())) {
+      commentRepository.deleteById(commentId);
+    } else {
+      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+    }
   }
 
   @Transactional
   public void deletePostsComments(int postId) {
-    commentRepository.deleteByPostId(postId);
+    Optional<Post> postOptional = postRepository.findById(postId);
+    Post postEntity =
+        postOptional.orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "Cannot delete post's comments - postId " + postId + " not found."));
+    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+
+    if (currentUser.equals(postEntity.getUser())) {
+      commentRepository.deleteByPostId(postId);
+    } else {
+      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+    }
   }
 
   @Transactional
   public void deleteUsersComments(int userId) {
-    commentRepository.deleteByUserId(userId);
+    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    if (currentUser.getId() == userId) {
+      commentRepository.deleteByUserId(userId);
+    } else {
+      throw new UnauthorizedOperationException("User is not authorized to perform this action");
+    }
   }
 }

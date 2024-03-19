@@ -1,12 +1,16 @@
 # TODOs
 
+"Post" to "PostEntity" and etc. for all entities
+
+- to differentiate better between Entities, DTOs, and other POJOs with other purposes.
+
 TODO: add created_at & updated_at columns
 
-TODO: posts/comments can only be created/updated/deleted by the owner (currently auth'd user must have same userId)
-
-- "throw new UnauthorizedOperationException" in service class. catch with @ControllerAdvice and return 401.
+TODO: AOP logging
 
 TODO: custom RecordNotFoundException- should be able to pass in entity type & id #
+
+TODO: create GET /user, PUT /user, DELETE /user
 
 TODO: change ints to Longs for ids
 
@@ -20,7 +24,11 @@ TODO: endpoint to update user info (separate from register user. should go in Us
 
 TODO: handle io.jsonwebtoken.ExpiredJwtException (thrown when parsing JWT in JwtFilter)
 
-TODO: AOP logging
+TODO: logic for creating admin accounts. separate endpoint?
+
+TODO: optimize number of DB queries.
+
+TODO: see if JPA .save() is necessary when updating (i.e. postEntity.setContent(...))
 
 # Business Feature Ideas
 
@@ -62,6 +70,22 @@ like a chart of likes over time, most popular posts, follower chart, etc.
 ## Banned Users
 
 - admins can ban users. set a flag on the user Entity to banned=true
+
+## Blocked Users
+
+- Users can block other users from seeing or interacting with their account.
+
+## Report Posts/Comments
+
+- Users can report other posts or comments. If a post/comment is reported enough, it should be hidden or deleted.
+
+## Profanity Filter 
+
+- User can set a flag to mask expletives
+
+## Parental Accounts
+
+- User can be a "parent" of another user. Parents can change and disable settings on the "child" account (like Profanity Filter)
 
 # Tech Feature Ideas
 
