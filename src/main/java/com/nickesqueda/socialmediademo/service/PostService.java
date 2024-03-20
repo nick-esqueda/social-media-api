@@ -26,6 +26,20 @@ public class PostService {
     this.authUtils = authUtils;
   }
 
+  public PostDto getPost(Long postId) {
+    Post postEntity = postRepository.retrieveOrElseThrow(postId);
+    return PostMapper.toDto(postEntity);
+  }
+
+  public List<PostDto> getUsersPosts(Long userId) {
+    if (!userRepository.existsById(userId)) {
+      throw new ResourceNotFoundException(UserEntity.class, userId);
+    }
+
+    List<Post> posts = postRepository.findByUserId(userId);
+    return posts.stream().map(PostMapper::toDto).toList();
+  }
+
   public void createPost(Long userId, PostDto postDto) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
@@ -37,11 +51,6 @@ public class PostService {
     Post postEntity = PostMapper.toEntity(postDto);
     postEntity.setUser(userEntity);
     postRepository.save(postEntity);
-  }
-
-  public PostDto getPost(Long postId) {
-    Post postEntity = postRepository.retrieveOrElseThrow(postId);
-    return PostMapper.toDto(postEntity);
   }
 
   public PostDto updatePost(Long postId, PostDto updatedPost) {
@@ -66,15 +75,6 @@ public class PostService {
     }
 
     postRepository.deleteById(postId);
-  }
-
-  public List<PostDto> getUsersPosts(Long userId) {
-    if (!userRepository.existsById(userId)) {
-      throw new ResourceNotFoundException(UserEntity.class, userId);
-    }
-
-    List<Post> posts = postRepository.findByUserId(userId);
-    return posts.stream().map(PostMapper::toDto).toList();
   }
 
   @Transactional

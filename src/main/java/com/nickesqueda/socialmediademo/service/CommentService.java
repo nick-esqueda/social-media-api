@@ -33,16 +33,6 @@ public class CommentService {
     this.authUtils = authUtils;
   }
 
-  public void createComment(Long postId, CommentDto commentDto) {
-    Post postEntity = postRepository.retrieveOrElseThrow(postId);
-    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
-
-    Comment commentEntity = CommentMapper.toEntity(commentDto);
-    commentEntity.setPost(postEntity);
-    commentEntity.setUser(currentUser);
-    commentRepository.save(commentEntity);
-  }
-
   public CommentDto getComment(Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     return CommentMapper.toDto(commentEntity);
@@ -64,6 +54,16 @@ public class CommentService {
 
     List<Comment> comments = commentRepository.findByUserId(userId);
     return comments.stream().map(CommentMapper::toDto).toList();
+  }
+
+  public void createComment(Long postId, CommentDto commentDto) {
+    Post postEntity = postRepository.retrieveOrElseThrow(postId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
+
+    Comment commentEntity = CommentMapper.toEntity(commentDto);
+    commentEntity.setPost(postEntity);
+    commentEntity.setUser(currentUser);
+    commentRepository.save(commentEntity);
   }
 
   public CommentDto updateComment(Long commentId, CommentDto updatedComment) {

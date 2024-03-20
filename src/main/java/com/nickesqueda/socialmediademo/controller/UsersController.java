@@ -23,6 +23,11 @@ public class UsersController {
     return postService.getUsersPosts(userId);
   }
 
+  @GetMapping("/{userId}/comments")
+  public List<CommentDto> getUsersComments(@PathVariable("userId") Long userId) {
+    return commentService.getUsersComments(userId);
+  }
+
   @PostMapping("/{userId}/posts")
   public void createPost(@PathVariable("userId") Long userId, @RequestBody PostDto postDto) {
     // TODO: return 201 CREATED.
@@ -32,11 +37,6 @@ public class UsersController {
   @DeleteMapping("/{userId}/posts")
   public void deleteUsersPosts(@PathVariable("userId") Long userId) {
     postService.deleteUsersPosts(userId);
-  }
-
-  @GetMapping("/{userId}/comments")
-  public List<CommentDto> getUsersComments(@PathVariable("userId") Long userId) {
-    return commentService.getUsersComments(userId);
   }
 
   @DeleteMapping("/{userId}/comments")

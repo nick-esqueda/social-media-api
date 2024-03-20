@@ -23,6 +23,17 @@ public class PostsController {
     return postService.getPost(postId);
   }
 
+  @GetMapping("/{postId}/comments")
+  public List<CommentDto> getPostsComments(@PathVariable("postId") Long postId) {
+    return commentService.getPostsComments(postId);
+  }
+
+  @PostMapping("/{postId}/comments")
+  public void createComment(@PathVariable("postId") Long postId, @RequestBody CommentDto comment) {
+    // TODO: return 201 CREATED.
+    commentService.createComment(postId, comment);
+  }
+
   @PutMapping("/{postId}")
   public PostDto updatePost(@PathVariable("postId") Long postId, @RequestBody PostDto updatedPost) {
     return postService.updatePost(postId, updatedPost);
@@ -33,19 +44,8 @@ public class PostsController {
     postService.deletePost(postId);
   }
 
-  @GetMapping("/{postId}/comments")
-  public List<CommentDto> getPostsComments(@PathVariable("postId") Long postId) {
-    return commentService.getPostsComments(postId);
-  }
-
   @DeleteMapping("/{postId}/comments")
   public void deletePostsComments(@PathVariable("postId") Long postId) {
     commentService.deletePostsComments(postId);
-  }
-
-  @PostMapping("/{postId}/comments")
-  public void createComment(@PathVariable("postId") Long postId, @RequestBody CommentDto comment) {
-    // TODO: return 201 CREATED.
-    commentService.createComment(postId, comment);
   }
 }
