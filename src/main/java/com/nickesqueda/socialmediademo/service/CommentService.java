@@ -52,6 +52,7 @@ public class CommentService {
     if (!postRepository.existsById(postId)) {
       throw new ResourceNotFoundException(Post.class, postId);
     }
+
     List<Comment> comments = commentRepository.findByPostId(postId);
     return comments.stream().map(CommentMapper::toDto).toList();
   }
@@ -60,6 +61,7 @@ public class CommentService {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
+
     List<Comment> comments = commentRepository.findByUserId(userId);
     return comments.stream().map(CommentMapper::toDto).toList();
   }
@@ -68,24 +70,24 @@ public class CommentService {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(commentEntity.getUser())) {
-      commentEntity.setContent(updatedComment.getContent());
-      commentRepository.save(commentEntity);
-      return CommentMapper.toDto(commentEntity);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(commentEntity.getUser())) {
+      throw new UnauthorizedOperationException();
     }
+
+    commentEntity.setContent(updatedComment.getContent());
+    commentRepository.save(commentEntity);
+    return CommentMapper.toDto(commentEntity);
   }
 
   public void deleteComment(Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(commentEntity.getUser())) {
-      commentRepository.deleteById(commentId);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(commentEntity.getUser())) {
+      throw new UnauthorizedOperationException();
     }
+
+    commentRepository.deleteById(commentId);
   }
 
   @Transactional
@@ -93,11 +95,11 @@ public class CommentService {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(postEntity.getUser())) {
-      commentRepository.deleteByPostId(postId);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(postEntity.getUser())) {
+      throw new UnauthorizedOperationException();
     }
+
+    commentRepository.deleteByPostId(postId);
   }
 
   @Transactional
@@ -105,10 +107,10 @@ public class CommentService {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(userEntity)) {
-      commentRepository.deleteByUserId(userId);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(userEntity)) {
+      throw new UnauthorizedOperationException();
     }
+
+    commentRepository.deleteByUserId(userId);
   }
 }

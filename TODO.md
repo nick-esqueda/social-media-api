@@ -1,20 +1,16 @@
 # TODOs
 
-"Post" to "PostEntity" and etc. for all entities
-
-- to differentiate better between Entities, DTOs, and other POJOs with other purposes.
-
 TODO: add created_at & updated_at columns
 
 TODO: AOP logging
+
+TODO: add @NotNull to parameters
 
 TODO: create GET /user, PUT /user, DELETE /user
 
 TODO: set the currently authenticated UserEntity to be accessed anywhere (like the Authentication object) 
 
 - could also set the "username" of the Authentication object to be the Entity id
-
-TODO: change ints to Longs for ids
 
 TODO: return proper response codes / ResponseEntities from controller endpoints
 
@@ -101,6 +97,10 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 ## Scheduled Posts/Comments
 
 - User can choose to post a Post or Comment at a certain time in the future.
+
+## Direct Messages
+
+## Post Sharing / Re-posts
 
 # Tech Feature Ideas
 

@@ -30,13 +30,13 @@ public class PostService {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(userEntity)) {
-      Post postEntity = PostMapper.toEntity(postDto);
-      postEntity.setUser(userEntity);
-      postRepository.save(postEntity);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(userEntity)) {
+      throw new UnauthorizedOperationException();
     }
+
+    Post postEntity = PostMapper.toEntity(postDto);
+    postEntity.setUser(userEntity);
+    postRepository.save(postEntity);
   }
 
   public PostDto getPost(Long postId) {
@@ -48,30 +48,31 @@ public class PostService {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(postEntity.getUser())) {
-      postEntity.setContent(updatedPost.getContent());
-      postRepository.save(postEntity);
-      return PostMapper.toDto(postEntity);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(postEntity.getUser())) {
+      throw new UnauthorizedOperationException();
     }
+
+    postEntity.setContent(updatedPost.getContent());
+    postRepository.save(postEntity);
+    return PostMapper.toDto(postEntity);
   }
 
   public void deletePost(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(postEntity.getUser())) {
-      postRepository.deleteById(postId);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(postEntity.getUser())) {
+      throw new UnauthorizedOperationException();
     }
+
+    postRepository.deleteById(postId);
   }
 
   public List<PostDto> getUsersPosts(Long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
+
     List<Post> posts = postRepository.findByUserId(userId);
     return posts.stream().map(PostMapper::toDto).toList();
   }
@@ -81,10 +82,10 @@ public class PostService {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
-    if (currentUser.equals(userEntity)) {
-      postRepository.deleteByUserId(userId);
-    } else {
-      throw new UnauthorizedOperationException("User is not authorized to perform this operation");
+    if (!currentUser.equals(userEntity)) {
+      throw new UnauthorizedOperationException();
     }
+
+    postRepository.deleteByUserId(userId);
   }
 }
