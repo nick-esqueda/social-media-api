@@ -1,19 +1,18 @@
 package com.nickesqueda.socialmediademo.security;
 
+import static com.nickesqueda.socialmediademo.security.SecurityConstants.ROLES;
+import static com.nickesqueda.socialmediademo.security.SecurityConstants.SUBJECT;
+
 import com.nickesqueda.socialmediademo.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-
-import javax.crypto.SecretKey;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.nickesqueda.socialmediademo.security.SecurityConstants.ROLES;
-import static com.nickesqueda.socialmediademo.security.SecurityConstants.SUBJECT;
+import javax.crypto.SecretKey;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 public class JwtUtils {
   // TODO: extract into config and secret management.

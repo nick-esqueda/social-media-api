@@ -1,5 +1,7 @@
 package com.nickesqueda.socialmediademo;
 
+import static com.nickesqueda.socialmediademo.security.SecurityConstants.*;
+
 import com.nickesqueda.socialmediademo.entity.Comment;
 import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.Role;
@@ -8,13 +10,10 @@ import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
+import java.util.Collections;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.Collections;
-
-import static com.nickesqueda.socialmediademo.security.SecurityConstants.*;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {

@@ -1,21 +1,20 @@
 package com.nickesqueda.socialmediademo.service;
 
+import com.nickesqueda.socialmediademo.dto.UserCredentials;
 import com.nickesqueda.socialmediademo.entity.Role;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
-import com.nickesqueda.socialmediademo.dto.UserCredentials;
 import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import com.nickesqueda.socialmediademo.security.JwtUtils;
+import java.util.Collection;
+import java.util.Collections;
+import javax.management.relation.RoleNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.management.relation.RoleNotFoundException;
-import java.util.Collection;
-import java.util.Collections;
 
 @Service
 public class AuthService {

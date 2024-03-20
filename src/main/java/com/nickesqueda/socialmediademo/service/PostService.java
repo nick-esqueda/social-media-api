@@ -9,10 +9,9 @@ import com.nickesqueda.socialmediademo.mapper.PostMapper;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class PostService {

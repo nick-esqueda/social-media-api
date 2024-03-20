@@ -1,11 +1,10 @@
 package com.nickesqueda.socialmediademo.entity;
 
 import jakarta.persistence.*;
+import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Map;
 
 /**
  * TODO: convert to enum

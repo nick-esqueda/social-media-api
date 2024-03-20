@@ -1,10 +1,9 @@
 package com.nickesqueda.socialmediademo.entity;
 
 import jakarta.persistence.*;
+import java.util.Collection;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Collection;
 
 @Data
 @NoArgsConstructor
