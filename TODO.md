@@ -30,6 +30,8 @@ TODO: logic for creating admin accounts. separate endpoint?
 
 TODO: optimize number of DB queries.
 
+- could use raw SQL with @Query
+
 TODO: see if JPA .save() is necessary when updating (i.e. post.setContent(...))
 
 TODO: use id field as the jwt principal/subject. this will allow for the below method-level auth:
@@ -64,7 +66,7 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 
 ## 2FA & 2FA Enrollment
 
-## Admin can delete other user's postEntities
+## Admin Delete
 
 - if the currently authenticated user is either an Admin or the author of the Post, the Post can be deleted.
 
@@ -96,6 +98,10 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 
 - User can be a "parent" of another user. Parents can change and disable settings on the "child" account (like Profanity Filter)
 
+## Scheduled Posts/Comments
+
+- User can choose to post a Post or Comment at a certain time in the future.
+
 # Tech Feature Ideas
 
 - Custom exception handling
@@ -120,3 +126,4 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 
 # Tech Design Notes
 
+- JPA vs. JDBC? maybe fork this repo and create a version with JDBC.

@@ -25,6 +25,7 @@ public class AuthUtils {
   public static Authentication getCurrentAuthentication() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !authentication.isAuthenticated()) {
+      // TODO: throw a custom exception.
       throw new RuntimeException("User is not authenticated.");
     }
     return authentication;
