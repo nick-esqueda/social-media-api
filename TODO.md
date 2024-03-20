@@ -30,12 +30,14 @@ TODO: logic for creating admin accounts. separate endpoint?
 
 TODO: optimize number of DB queries.
 
-TODO: see if JPA .save() is necessary when updating (i.e. postEntity.setContent(...))
+TODO: see if JPA .save() is necessary when updating (i.e. post.setContent(...))
 
 TODO: use id field as the jwt principal/subject. this will allow for the below method-level auth:
 
 - example: @PreAuthorize("#username == authentication.principal.username")
 - more: https://www.baeldung.com/spring-security-method-security
+
+TODO: JWT object for JWTs? instead of String. may help with serializing/deserializing
 
 # Business Feature Ideas
 
@@ -56,17 +58,17 @@ option to delete all comments on the post when disabling comments after post is 
 
 ## Post Statistics
 
-like a chart of likes over time, most popular posts, follower chart, etc.
+like a chart of likes over time, most popular postEntities, follower chart, etc.
 
 ## Business Account
 
 ## 2FA & 2FA Enrollment
 
-## Admin can delete other user's posts
+## Admin can delete other user's postEntities
 
 - if the currently authenticated user is either an Admin or the author of the Post, the Post can be deleted.
 
-- Admins should still not be allowed to update other user's posts.
+- Admins should still not be allowed to update other user's postEntities.
 
 ## Post author can delete comments on the post
 
@@ -84,7 +86,7 @@ like a chart of likes over time, most popular posts, follower chart, etc.
 
 ## Report Posts/Comments
 
-- Users can report other posts or comments. If a post/comment is reported enough, it should be hidden or deleted.
+- Users can report other postEntities or comments. If a post/comment is reported enough, it should be hidden or deleted.
 
 ## Profanity Filter 
 

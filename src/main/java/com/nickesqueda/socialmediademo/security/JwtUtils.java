@@ -2,14 +2,11 @@ package com.nickesqueda.socialmediademo.security;
 
 import com.nickesqueda.socialmediademo.entity.Role;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.*;

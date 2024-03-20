@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.management.relation.RoleNotFoundException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 @Service
 public class AuthService {
@@ -41,14 +40,14 @@ public class AuthService {
     String password = userCredentials.getPassword();
 
     // construct a new user entity and save it in the DB.
-    UserEntity user = new UserEntity();
-    user.setUsername(username);
-    user.setPasswordHash(passwordEncoder.encode(password));
+    UserEntity userEntity = new UserEntity();
+    userEntity.setUsername(username);
+    userEntity.setPasswordHash(passwordEncoder.encode(password));
     // TODO: separate logic for different roles (admin/business user/etc.)
     Role role = roleRepository.findByRoleName("USER").orElseThrow(RoleNotFoundException::new);
     Collection<Role> roles = Collections.singletonList(role);
-    user.setRoles(roles);
-    userRepository.save(user);
+    userEntity.setRoles(roles);
+    userRepository.save(userEntity);
 
     // populate SecurityContext with the newly authenticated user.
     Authentication authentication =
