@@ -36,7 +36,7 @@ public class AuthUtils {
     this.userRepository = userRepository;
   }
 
-  public UserEntity getCurrentlyAuthenticatedUserEntity() {
+  public UserEntity getCurrentAuthenticatedUser() {
     String username = getCurrentAuthentication().getName();
     Optional<UserEntity> userOptional = userRepository.findByUsername(username);
     return userOptional.orElseThrow(IllegalStateException::new);

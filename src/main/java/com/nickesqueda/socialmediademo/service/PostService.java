@@ -28,11 +28,8 @@ public class PostService {
   }
 
   public void createPost(int userId, PostDto postDto) {
-    UserEntity userEntity =
-        userRepository
-            .findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException(UserEntity.class, userId));
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
     if (currentUser.equals(userEntity)) {
       Post postEntity = PostMapper.toEntity(postDto);
@@ -44,19 +41,13 @@ public class PostService {
   }
 
   public PostDto getPost(int postId) {
-    Post postEntity =
-        postRepository
-            .findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
+    Post postEntity = postRepository.retrieveOrElseThrow(postId);
     return PostMapper.toDto(postEntity);
   }
 
   public PostDto updatePost(int postId, PostDto updatedPost) {
-    Post postEntity =
-        postRepository
-            .findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    Post postEntity = postRepository.retrieveOrElseThrow(postId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
     if (currentUser.equals(postEntity.getUser())) {
       postEntity.setContent(updatedPost.getContent());
@@ -68,11 +59,8 @@ public class PostService {
   }
 
   public void deletePost(int postId) {
-    Post postEntity =
-        postRepository
-            .findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    Post postEntity = postRepository.retrieveOrElseThrow(postId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
     if (currentUser.equals(postEntity.getUser())) {
       postRepository.deleteById(postId);
@@ -88,7 +76,8 @@ public class PostService {
 
   @Transactional
   public void deleteUsersPosts(int userId) {
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
+
     if (currentUser.getId() == userId) {
       postRepository.deleteByUserId(userId);
     } else {

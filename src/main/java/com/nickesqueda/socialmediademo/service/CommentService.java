@@ -29,11 +29,8 @@ public class CommentService {
   }
 
   public void createComment(int postId, CommentDto commentDto) {
-    Post postEntity =
-        postRepository
-            .findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    Post postEntity = postRepository.retrieveOrElseThrow(postId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
     Comment commentEntity = CommentMapper.toEntity(commentDto);
     commentEntity.setPost(postEntity);
@@ -42,10 +39,7 @@ public class CommentService {
   }
 
   public CommentDto getComment(int commentId) {
-    Comment commentEntity =
-        commentRepository
-            .findById(commentId)
-            .orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
+    Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     return CommentMapper.toDto(commentEntity);
   }
 
@@ -63,11 +57,8 @@ public class CommentService {
   }
 
   public CommentDto updateComment(int commentId, CommentDto updatedComment) {
-    Comment commentEntity =
-        commentRepository
-            .findById(commentId)
-            .orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
     if (currentUser.equals(commentEntity.getUser())) {
       commentEntity.setContent(updatedComment.getContent());
@@ -79,11 +70,8 @@ public class CommentService {
   }
 
   public void deleteComment(int commentId) {
-    Comment commentEntity =
-        commentRepository
-            .findById(commentId)
-            .orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
     if (currentUser.equals(commentEntity.getUser())) {
       commentRepository.deleteById(commentId);
@@ -94,11 +82,8 @@ public class CommentService {
 
   @Transactional
   public void deletePostsComments(int postId) {
-    Post postEntity =
-        postRepository
-            .findById(postId)
-            .orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    Post postEntity = postRepository.retrieveOrElseThrow(postId);
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
     if (currentUser.equals(postEntity.getUser())) {
       commentRepository.deleteByPostId(postId);
@@ -109,7 +94,8 @@ public class CommentService {
 
   @Transactional
   public void deleteUsersComments(int userId) {
-    UserEntity currentUser = authUtils.getCurrentlyAuthenticatedUserEntity();
+    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
+
     if (currentUser.getId() == userId) {
       commentRepository.deleteByUserId(userId);
     } else {
