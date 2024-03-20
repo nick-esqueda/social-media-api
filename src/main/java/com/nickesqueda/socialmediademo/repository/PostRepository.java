@@ -5,14 +5,14 @@ import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PostRepository extends JpaRepository<Post, Integer> {
-  List<Post> findByUserId(int userId);
+public interface PostRepository extends JpaRepository<Post, Long> {
+  List<Post> findByUserId(Long userId);
 
-  void deleteById(int postId);
+  void deleteById(Long postId);
 
-  void deleteByUserId(int userId);
+  void deleteByUserId(Long userId);
 
-  default Post retrieveOrElseThrow(int postId) {
+  default Post retrieveOrElseThrow(Long postId) {
     return findById(postId).orElseThrow(() -> new ResourceNotFoundException(Post.class, postId));
   }
 }

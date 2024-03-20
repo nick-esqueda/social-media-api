@@ -19,32 +19,32 @@ public class PostsController {
   }
 
   @GetMapping("/{postId}")
-  public PostDto getPost(@PathVariable("postId") int postId) {
+  public PostDto getPost(@PathVariable("postId") Long postId) {
     return postService.getPost(postId);
   }
 
   @PutMapping("/{postId}")
-  public PostDto updatePost(@PathVariable("postId") int postId, @RequestBody PostDto updatedPost) {
+  public PostDto updatePost(@PathVariable("postId") Long postId, @RequestBody PostDto updatedPost) {
     return postService.updatePost(postId, updatedPost);
   }
 
   @DeleteMapping("/{postId}")
-  public void deletePost(@PathVariable("postId") int postId) {
+  public void deletePost(@PathVariable("postId") Long postId) {
     postService.deletePost(postId);
   }
 
   @GetMapping("/{postId}/comments")
-  public List<CommentDto> getPostsComments(@PathVariable("postId") int postId) {
+  public List<CommentDto> getPostsComments(@PathVariable("postId") Long postId) {
     return commentService.getPostsComments(postId);
   }
 
   @DeleteMapping("/{postId}/comments")
-  public void deletePostsComments(@PathVariable("postId") int postId) {
+  public void deletePostsComments(@PathVariable("postId") Long postId) {
     commentService.deletePostsComments(postId);
   }
 
   @PostMapping("/{postId}/comments")
-  public void createComment(@PathVariable("postId") int postId, @RequestBody CommentDto comment) {
+  public void createComment(@PathVariable("postId") Long postId, @RequestBody CommentDto comment) {
     // TODO: return 201 CREATED.
     commentService.createComment(postId, comment);
   }

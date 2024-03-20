@@ -13,7 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Comment {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Long id;
 
   @Column(nullable = false)
   private String content;

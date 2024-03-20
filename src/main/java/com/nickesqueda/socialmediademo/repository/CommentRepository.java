@@ -5,16 +5,16 @@ import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CommentRepository extends JpaRepository<Comment, Integer> {
-  List<Comment> findByPostId(int postId);
+public interface CommentRepository extends JpaRepository<Comment, Long> {
+  List<Comment> findByPostId(Long postId);
 
-  List<Comment> findByUserId(int userId);
+  List<Comment> findByUserId(Long userId);
 
-  void deleteByPostId(int postId);
+  void deleteByPostId(Long postId);
 
-  void deleteByUserId(int userId);
+  void deleteByUserId(Long userId);
 
-  default Comment retrieveOrElseThrow(int commentId) {
+  default Comment retrieveOrElseThrow(Long commentId) {
     return findById(commentId)
         .orElseThrow(() -> new ResourceNotFoundException(Comment.class, commentId));
   }

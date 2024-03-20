@@ -19,28 +19,28 @@ public class UsersController {
   }
 
   @GetMapping("/{userId}/posts")
-  public List<PostDto> getUsersPosts(@PathVariable("userId") int userId) {
+  public List<PostDto> getUsersPosts(@PathVariable("userId") Long userId) {
     return postService.getUsersPosts(userId);
   }
 
   @PostMapping("/{userId}/posts")
-  public void createPost(@PathVariable("userId") int userId, @RequestBody PostDto postDto) {
+  public void createPost(@PathVariable("userId") Long userId, @RequestBody PostDto postDto) {
     // TODO: return 201 CREATED.
     postService.createPost(userId, postDto);
   }
 
   @DeleteMapping("/{userId}/posts")
-  public void deleteUsersPosts(@PathVariable("userId") int userId) {
+  public void deleteUsersPosts(@PathVariable("userId") Long userId) {
     postService.deleteUsersPosts(userId);
   }
 
   @GetMapping("/{userId}/comments")
-  public List<CommentDto> getUsersComments(@PathVariable("userId") int userId) {
+  public List<CommentDto> getUsersComments(@PathVariable("userId") Long userId) {
     return commentService.getUsersComments(userId);
   }
 
   @DeleteMapping("/{userId}/comments")
-  public void deleteUsersComments(@PathVariable("userId") int userId) {
+  public void deleteUsersComments(@PathVariable("userId") Long userId) {
     commentService.deleteUsersComments(userId);
   }
 }

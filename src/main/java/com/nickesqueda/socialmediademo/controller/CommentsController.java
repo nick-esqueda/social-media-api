@@ -14,17 +14,17 @@ public class CommentsController {
   }
 
   @GetMapping("/{commentId}")
-  public CommentDto getComment(@PathVariable("commentId") int commentId) {
+  public CommentDto getComment(@PathVariable("commentId") Long commentId) {
     return commentService.getComment(commentId);
   }
 
   @PutMapping("/{commentId}")
-  public CommentDto updateComment(@PathVariable("commentId") int commentId, @RequestBody CommentDto updatedComment) {
+  public CommentDto updateComment(@PathVariable("commentId") Long commentId, @RequestBody CommentDto updatedComment) {
     return commentService.updateComment(commentId, updatedComment);
   }
 
   @DeleteMapping("/{commentId}")
-  public void deleteComment(@PathVariable("commentId") int commentId) {
+  public void deleteComment(@PathVariable("commentId") Long commentId) {
     commentService.deleteComment(commentId);
   }
 }

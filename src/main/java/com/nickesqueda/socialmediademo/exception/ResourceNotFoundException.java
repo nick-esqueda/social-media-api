@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class ResourceNotFoundException extends RuntimeException {
   private final Class<?> entityClass;
-  private final int entityId;
+  private final Long entityId;
 
-  public ResourceNotFoundException(Class<?> entityClass, int entityId) {
+  public ResourceNotFoundException(Class<?> entityClass, Long entityId) {
     super("Resource not found: " + entityClass.getSimpleName() + " #" + entityId);
     this.entityClass = entityClass;
     this.entityId = entityId;

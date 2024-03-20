@@ -33,7 +33,7 @@ public class CommentService {
     this.authUtils = authUtils;
   }
 
-  public void createComment(int postId, CommentDto commentDto) {
+  public void createComment(Long postId, CommentDto commentDto) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
@@ -43,12 +43,12 @@ public class CommentService {
     commentRepository.save(commentEntity);
   }
 
-  public CommentDto getComment(int commentId) {
+  public CommentDto getComment(Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     return CommentMapper.toDto(commentEntity);
   }
 
-  public List<CommentDto> getPostsComments(int postId) {
+  public List<CommentDto> getPostsComments(Long postId) {
     if (!postRepository.existsById(postId)) {
       throw new ResourceNotFoundException(Post.class, postId);
     }
@@ -56,7 +56,7 @@ public class CommentService {
     return comments.stream().map(CommentMapper::toDto).toList();
   }
 
-  public List<CommentDto> getUsersComments(int userId) {
+  public List<CommentDto> getUsersComments(Long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
@@ -64,7 +64,7 @@ public class CommentService {
     return comments.stream().map(CommentMapper::toDto).toList();
   }
 
-  public CommentDto updateComment(int commentId, CommentDto updatedComment) {
+  public CommentDto updateComment(Long commentId, CommentDto updatedComment) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
@@ -77,7 +77,7 @@ public class CommentService {
     }
   }
 
-  public void deleteComment(int commentId) {
+  public void deleteComment(Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
@@ -89,7 +89,7 @@ public class CommentService {
   }
 
   @Transactional
-  public void deletePostsComments(int postId) {
+  public void deletePostsComments(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
@@ -101,7 +101,7 @@ public class CommentService {
   }
 
   @Transactional
-  public void deleteUsersComments(int userId) {
+  public void deleteUsersComments(Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 

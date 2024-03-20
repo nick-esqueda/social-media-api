@@ -26,7 +26,7 @@ public class PostService {
     this.authUtils = authUtils;
   }
 
-  public void createPost(int userId, PostDto postDto) {
+  public void createPost(Long userId, PostDto postDto) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
@@ -39,12 +39,12 @@ public class PostService {
     }
   }
 
-  public PostDto getPost(int postId) {
+  public PostDto getPost(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     return PostMapper.toDto(postEntity);
   }
 
-  public PostDto updatePost(int postId, PostDto updatedPost) {
+  public PostDto updatePost(Long postId, PostDto updatedPost) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
@@ -57,7 +57,7 @@ public class PostService {
     }
   }
 
-  public void deletePost(int postId) {
+  public void deletePost(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 
@@ -68,7 +68,7 @@ public class PostService {
     }
   }
 
-  public List<PostDto> getUsersPosts(int userId) {
+  public List<PostDto> getUsersPosts(Long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
@@ -77,7 +77,7 @@ public class PostService {
   }
 
   @Transactional
-  public void deleteUsersPosts(int userId) {
+  public void deleteUsersPosts(Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
 

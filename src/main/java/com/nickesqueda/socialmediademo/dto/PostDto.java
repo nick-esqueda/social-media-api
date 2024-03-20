@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class PostDto {
-  private int id;
+  private Long id;
   private String content;
 }

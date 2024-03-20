@@ -18,7 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class Role implements GrantedAuthority {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+  private Long id;
 
   @Column(nullable = false, unique = true)
   private String roleName; // TODO: is this the same as "authority"? is this field needed?
