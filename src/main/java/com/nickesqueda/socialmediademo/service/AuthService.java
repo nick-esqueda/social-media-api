@@ -1,15 +1,19 @@
 package com.nickesqueda.socialmediademo.service;
 
-import com.nickesqueda.socialmediademo.dto.UserCredentials;
+import static com.nickesqueda.socialmediademo.security.SecurityConstants.USER;
+
+import com.nickesqueda.socialmediademo.dto.UserCredentialsDto;
+import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.entity.Role;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
+import com.nickesqueda.socialmediademo.mapper.UserMapper;
 import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import com.nickesqueda.socialmediademo.security.JwtUtils;
-import java.util.Collection;
+
 import java.util.Collections;
-import javax.management.relation.RoleNotFoundException;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,42 +38,25 @@ public class AuthService {
     this.roleRepository = roleRepository;
   }
 
-  public String registerNewUser(UserCredentials userCredentials) throws RoleNotFoundException {
-    String username = userCredentials.getUsername();
-    String password = userCredentials.getPassword();
+  public UserDto registerNewUser(UserCredentialsDto userCredentialsDto) {
+    // TODO: introduce separate logic for different roles (admin/business user/etc.)
+    Role role = roleRepository.retrieveByRoleNameOrElseThrow(USER);
+    String passwordHash = passwordEncoder.encode(userCredentialsDto.getPassword());
+    UserEntity userEntity = UserMapper.toEntity(userCredentialsDto, passwordHash, role);
 
-    // construct a new user entity and save it in the DB.
-    UserEntity userEntity = new UserEntity();
-    userEntity.setUsername(username);
-    userEntity.setPasswordHash(passwordEncoder.encode(password));
-    // TODO: separate logic for different roles (admin/business user/etc.)
-    Role role = roleRepository.findByRoleName("USER").orElseThrow(RoleNotFoundException::new);
-    Collection<Role> roles = Collections.singletonList(role);
-    userEntity.setRoles(roles);
     userRepository.save(userEntity);
 
-    // populate SecurityContext with the newly authenticated user.
-    Authentication authentication =
-        new UsernamePasswordAuthenticationToken(username, password, roles);
-    AuthUtils.populateSpringSecurityContext(authentication);
+    String authToken = authenticateUser(userCredentialsDto);
 
-    // create JWT and send in response so user can be re-authenticated.
-    return JwtUtils.createJwt(authentication);
+    return UserMapper.toDto(userEntity, authToken);
   }
 
-  public String authenticateUser(UserCredentials userCredentials) {
-    String username = userCredentials.getUsername();
-    String password = userCredentials.getPassword();
-
-    // authenticate user with Spring Security.
-    // throws exception if user can't be authenticated.
-    UsernamePasswordAuthenticationToken token =
-        new UsernamePasswordAuthenticationToken(username, password);
+  public String authenticateUser(UserCredentialsDto userCredentialsDto) {
+    String username = userCredentialsDto.getUsername();
+    String password = userCredentialsDto.getPassword();
+    Authentication token = UsernamePasswordAuthenticationToken.unauthenticated(username, password);
     Authentication authentication = authenticationManager.authenticate(token);
-    // populate SecurityContext with the currently authenticated user.
-    AuthUtils.populateSpringSecurityContext(authentication);
 
-    // create JWT and send in response so user can be re-authenticated.
     return JwtUtils.createJwt(authentication);
   }
 }

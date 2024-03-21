@@ -20,6 +20,12 @@ public class GlobalExceptionHandler {
     return new ErrorResponse(e.getMessage());
   }
 
+  @ResponseStatus(BAD_REQUEST)
+  @ExceptionHandler(UsernameUnavailableException.class)
+  public ErrorResponse handleUsernameUnavailableException(UsernameUnavailableException e) {
+    return new ErrorResponse(e.getMessage());
+  }
+
   @ResponseStatus(INTERNAL_SERVER_ERROR)
   @ExceptionHandler(RuntimeException.class)
   public ErrorResponse handleGenericException(RuntimeException e) {

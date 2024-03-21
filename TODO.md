@@ -1,5 +1,15 @@
 # TODOs
 
+TODO: return user DTO with JWT from /register and /auth
+
+TODO: decouple Role and GrantedAuthority (Role implements GrantedAuthority)
+
+- this is coupling the repository layer with the security layer. they should not depend on each other.
+
+TODO: create positive scenario postman API tests
+
+TODO: create negative scenario postman API tests
+
 TODO: add created_at & updated_at columns
 
 TODO: AOP logging
@@ -36,6 +46,8 @@ TODO: use id field as the jwt principal/subject. this will allow for the below m
 - more: https://www.baeldung.com/spring-security-method-security
 
 TODO: JWT object for JWTs? instead of String. may help with serializing/deserializing
+
+TODO: return Location header for POST requests?
 
 # Business Feature Ideas
 

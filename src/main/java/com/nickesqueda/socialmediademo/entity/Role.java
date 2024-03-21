@@ -12,7 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
  * TODO: set roleName to not writeable? (only use the pre-defined roles from table)
  */
 @Data
-@NoArgsConstructor // TODO: is this needed? if only for Jackson, replace with DTO and remove this.
+@NoArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
