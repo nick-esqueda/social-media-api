@@ -1,7 +1,6 @@
 package com.nickesqueda.socialmediademo.security;
 
-import static com.nickesqueda.socialmediademo.security.SecurityConstants.ROLES;
-import static com.nickesqueda.socialmediademo.security.SecurityConstants.SUBJECT;
+import static com.nickesqueda.socialmediademo.security.SecurityConstants.*;
 
 import com.nickesqueda.socialmediademo.entity.Role;
 import io.jsonwebtoken.Claims;
@@ -19,10 +18,11 @@ public class JwtUtils {
   private static final String SECRET =
       "507c4db58311630bdfa4ed5d4b8a562ca2f43370e03a3df411b3784a805681f7";
 
-  public static String createJwt(Authentication authentication) {
-    String username = authentication.getName();
-    Map<String, Object> claims = Map.of(SUBJECT, username, ROLES, authentication.getAuthorities());
-    return generateJwt(username, claims);
+  public static String generateJwt(Authentication authentication) {
+    UserPrincipal currentUser = (UserPrincipal) authentication.getPrincipal();
+    String userId = currentUser.getId().toString();
+    Map<String, Object> claims = createClaims(currentUser);
+    return generateJwt(userId, claims);
   }
 
   private static String generateJwt(String subject, Map<String, Object> claims) {
@@ -37,14 +37,9 @@ public class JwtUtils {
         .compact();
   }
 
-  private static SecretKey getSignKey() {
-    byte[] keyInBytes = Decoders.BASE64.decode(SECRET);
-    return Keys.hmacShaKeyFor(keyInBytes);
-  }
-
-  public static String extractUsername(String token) {
+  public static Long extractUserId(String token) {
     Claims claims = extractAllClaimsAndValidateJwt(token);
-    return claims.getSubject();
+    return Long.valueOf(claims.getSubject());
   }
 
   public static Collection<GrantedAuthority> extractGrantedAuthorities(String token) {
@@ -60,5 +55,18 @@ public class JwtUtils {
         .build()
         .parseClaimsJws(token) // validates the JWT signature and expiration.
         .getBody();
+  }
+
+  private static SecretKey getSignKey() {
+    byte[] keyInBytes = Decoders.BASE64.decode(SECRET);
+    return Keys.hmacShaKeyFor(keyInBytes);
+  }
+
+  public static Map<String, Object> createClaims(UserPrincipal userPrincipal) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put(SUBJECT, userPrincipal.getId());
+    claims.put(USERNAME, userPrincipal.getUsername());
+    claims.put(ROLES, userPrincipal.getAuthorities());
+    return claims;
   }
 }

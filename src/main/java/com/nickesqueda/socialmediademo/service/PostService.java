@@ -17,13 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
   private final PostRepository postRepository;
   private final UserRepository userRepository;
-  private final AuthUtils authUtils;
 
-  public PostService(
-      PostRepository postRepository, UserRepository userRepository, AuthUtils authUtils) {
+  public PostService(PostRepository postRepository, UserRepository userRepository) {
     this.postRepository = postRepository;
     this.userRepository = userRepository;
-    this.authUtils = authUtils;
   }
 
   public PostDto getPost(Long postId) {
@@ -42,9 +39,9 @@ public class PostService {
 
   public void createPost(Long userId, PostDto postDto) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
-    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
+    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
-    if (!currentUser.equals(userEntity)) {
+    if (!currentUserId.equals(userId)) {
       throw new UnauthorizedOperationException();
     }
 
@@ -55,9 +52,10 @@ public class PostService {
 
   public PostDto updatePost(Long postId, PostDto updatedPost) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
-    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
+    UserEntity userEntity = postEntity.getUser();
+    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
-    if (!currentUser.equals(postEntity.getUser())) {
+    if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
     }
 
@@ -68,9 +66,10 @@ public class PostService {
 
   public void deletePost(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
-    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
+    UserEntity userEntity = postEntity.getUser();
+    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
-    if (!currentUser.equals(postEntity.getUser())) {
+    if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
     }
 
@@ -80,9 +79,9 @@ public class PostService {
   @Transactional
   public void deleteUsersPosts(Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
-    UserEntity currentUser = authUtils.getCurrentAuthenticatedUser();
+    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
-    if (!currentUser.equals(userEntity)) {
+    if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
     }
 

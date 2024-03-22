@@ -1,7 +1,5 @@
 # TODOs
 
-TODO: return user DTO with JWT from /register and /auth
-
 TODO: decouple Role and GrantedAuthority (Role implements GrantedAuthority)
 
 - this is coupling the repository layer with the security layer. they should not depend on each other.
@@ -16,11 +14,21 @@ TODO: AOP logging
 
 TODO: add @NotNull to parameters
 
+TODO: parse JWT roles properly with a parser.
+
+- check this: io.jsonwebtoken.RequiredTypeException: Cannot convert existing claim value of type 'class java.lang.String' to desired type 'class java.lang.Long'. JJWT only converts simple String, Date, Long, Integer, Short and Byte types automatically. Anything more complex is expected to be already converted to your desired type by the JSON Deserializer implementation. You may specify a custom Deserializer for a JwtParser with the desired conversion configuration via the JwtParserBuilder.deserializeJsonWith() method. See https://github.com/jwtk/jjwt#custom-json-processor for more information. If using Jackson, you can specify custom claim POJO types as described in https://github.com/jwtk/jjwt#json-jackson-custom-types
+  at io.jsonwebtoken.impl.DefaultClaims.castClaimValue(DefaultClaims.java:169) ~[jjwt-impl-0.11.5.jar:0.11.5]
+  at io.jsonwebtoken.impl.DefaultClaims.get(DefaultClaims.java:152) ~[jjwt-impl-0.11.5.jar:0.11.5]
+  at com.nickesqueda.socialmediademo.security.JwtUtils.extractUserId(JwtUtils.java:56) ~[classes/:na]
+  at com.nickesqueda.socialmediademo.security.JwtAuthFilter.doFilterInternal(JwtAuthFilter.java:35) ~[classes/:na]
+
 TODO: create GET /user, PUT /user, DELETE /user
 
 TODO: set the currently authenticated UserEntity to be accessed anywhere (like the Authentication object) 
 
 - could also set the "username" of the Authentication object to be the Entity id
+
+- NOTE: UserEntity.equals is not passing when object is cast from Object to UserEntity, even though values are same.
 
 TODO: return proper response codes / ResponseEntities from controller endpoints
 

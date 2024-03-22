@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Collection;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,17 +22,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
     if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
-      String jwt = authorizationHeader.substring(BEARER.length());
+      String authToken = authorizationHeader.substring(BEARER.length());
 
       // JWT VALIDATION OCCURS HERE WHEN EXTRACTING CLAIMS.
-      String username = JwtUtils.extractUsername(jwt);
-      Collection<GrantedAuthority> roles = JwtUtils.extractGrantedAuthorities(jwt);
-      UsernamePasswordAuthenticationToken authenticationToken =
-          new UsernamePasswordAuthenticationToken(username, null, roles);
-      // set the current request object as details for the SecurityContext.
-      authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-      // populate SecurityContext with the currently authenticated user.
-      AuthUtils.populateSpringSecurityContext(authenticationToken);
+      Long userId = JwtUtils.extractUserId(authToken);
+      Collection<GrantedAuthority> roles = JwtUtils.extractGrantedAuthorities(authToken);
+      UsernamePasswordAuthenticationToken authentication =
+          new UsernamePasswordAuthenticationToken(userId, null, roles);
+
+      AuthUtils.setSecurityContext(authentication);
     }
 
     filterChain.doFilter(request, response);

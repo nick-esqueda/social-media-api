@@ -21,8 +21,8 @@ public class GlobalExceptionHandler {
   }
 
   @ResponseStatus(BAD_REQUEST)
-  @ExceptionHandler(UsernameUnavailableException.class)
-  public ErrorResponse handleUsernameUnavailableException(UsernameUnavailableException e) {
+  @ExceptionHandler(UsernameNotAvailableException.class)
+  public ErrorResponse handleUsernameNotAvailableException(UsernameNotAvailableException e) {
     return new ErrorResponse(e.getMessage());
   }
 

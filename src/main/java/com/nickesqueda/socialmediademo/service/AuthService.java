@@ -9,11 +9,9 @@ import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.mapper.UserMapper;
 import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
-import com.nickesqueda.socialmediademo.security.AuthUtils;
 import com.nickesqueda.socialmediademo.security.JwtUtils;
 
-import java.util.Collections;
-
+import com.nickesqueda.socialmediademo.security.UserPrincipal;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,25 +36,29 @@ public class AuthService {
     this.roleRepository = roleRepository;
   }
 
-  public UserDto registerNewUser(UserCredentialsDto userCredentialsDto) {
-    // TODO: introduce separate logic for different roles (admin/business user/etc.)
+  public UserDto registerUser(UserCredentialsDto userCredentialsDto) {
     Role role = roleRepository.retrieveByRoleNameOrElseThrow(USER);
     String passwordHash = passwordEncoder.encode(userCredentialsDto.getPassword());
     UserEntity userEntity = UserMapper.toEntity(userCredentialsDto, passwordHash, role);
-
     userRepository.save(userEntity);
 
-    String authToken = authenticateUser(userCredentialsDto);
-
+    Authentication authentication = authenticateUser(userCredentialsDto);
+    String authToken = JwtUtils.generateJwt(authentication);
     return UserMapper.toDto(userEntity, authToken);
   }
 
-  public String authenticateUser(UserCredentialsDto userCredentialsDto) {
+  public UserDto passwordLogin(UserCredentialsDto userCredentialsDto) {
+    Authentication authentication = authenticateUser(userCredentialsDto);
+    String authToken = JwtUtils.generateJwt(authentication);
+    UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+    return UserMapper.toDto(principal.getUserEntity(), authToken);
+  }
+
+  public Authentication authenticateUser(UserCredentialsDto userCredentialsDto) {
     String username = userCredentialsDto.getUsername();
     String password = userCredentialsDto.getPassword();
-    Authentication token = UsernamePasswordAuthenticationToken.unauthenticated(username, password);
-    Authentication authentication = authenticationManager.authenticate(token);
-
-    return JwtUtils.createJwt(authentication);
+    Authentication authentication =
+        UsernamePasswordAuthenticationToken.unauthenticated(username, password);
+    return authenticationManager.authenticate(authentication);
   }
 }

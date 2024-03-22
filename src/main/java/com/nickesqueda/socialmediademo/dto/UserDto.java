@@ -1,9 +1,8 @@
 package com.nickesqueda.socialmediademo.dto;
 
 import com.nickesqueda.socialmediademo.entity.Role;
-import lombok.Data;
-
 import java.util.Collection;
+import lombok.Data;
 
 @Data
 public class UserDto {
