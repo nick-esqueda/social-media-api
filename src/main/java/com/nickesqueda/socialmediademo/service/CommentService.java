@@ -10,9 +10,8 @@ import com.nickesqueda.socialmediademo.mapper.CommentMapper;
 import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
-import java.util.List;
-
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,13 +53,14 @@ public class CommentService {
     return comments.stream().map(CommentMapper::toDto).toList();
   }
 
-  public void createComment(Long postId, CommentDto commentDto) {
+  public CommentDto createComment(Long postId, CommentDto commentDto) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
     UserEntity currentUser = userRepository.retrieveOrElseThrow(currentUserId);
 
     Comment commentEntity = CommentMapper.toEntity(commentDto, postEntity, currentUser);
     commentRepository.save(commentEntity);
+    return CommentMapper.toDto(commentEntity);
   }
 
   public CommentDto updateComment(Long commentId, CommentDto updatedComment) {

@@ -2,7 +2,10 @@ package com.nickesqueda.socialmediademo.controller;
 
 import com.nickesqueda.socialmediademo.dto.CommentDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -19,11 +22,13 @@ public class CommentsController {
   }
 
   @PutMapping("/{commentId}")
-  public CommentDto updateComment(@PathVariable("commentId") Long commentId, @RequestBody CommentDto updatedComment) {
+  public CommentDto updateComment(
+      @PathVariable("commentId") Long commentId, @RequestBody CommentDto updatedComment) {
     return commentService.updateComment(commentId, updatedComment);
   }
 
   @DeleteMapping("/{commentId}")
+  @ResponseStatus(NO_CONTENT)
   public void deleteComment(@PathVariable("commentId") Long commentId) {
     commentService.deleteComment(commentId);
   }

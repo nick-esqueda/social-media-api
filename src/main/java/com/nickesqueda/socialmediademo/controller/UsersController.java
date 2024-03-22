@@ -5,7 +5,12 @@ import com.nickesqueda.socialmediademo.dto.PostDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
 import com.nickesqueda.socialmediademo.service.PostService;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,17 +34,19 @@ public class UsersController {
   }
 
   @PostMapping("/{userId}/posts")
-  public void createPost(@PathVariable("userId") Long userId, @RequestBody PostDto postDto) {
-    // TODO: return 201 CREATED.
-    postService.createPost(userId, postDto);
+  @ResponseStatus(CREATED)
+  public PostDto createPost(@PathVariable("userId") Long userId, @RequestBody PostDto postDto) {
+    return postService.createPost(userId, postDto);
   }
 
   @DeleteMapping("/{userId}/posts")
+  @ResponseStatus(NO_CONTENT)
   public void deleteUsersPosts(@PathVariable("userId") Long userId) {
     postService.deleteUsersPosts(userId);
   }
 
   @DeleteMapping("/{userId}/comments")
+  @ResponseStatus(NO_CONTENT)
   public void deleteUsersComments(@PathVariable("userId") Long userId) {
     commentService.deleteUsersComments(userId);
   }

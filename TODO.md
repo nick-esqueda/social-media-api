@@ -82,6 +82,8 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 
 ## 2FA & 2FA Enrollment
 
+## MFA Interdiction for Risky Behavior
+
 ## Admin Delete
 
 - if the currently authenticated user is either an Admin or the author of the Post, the Post can be deleted.

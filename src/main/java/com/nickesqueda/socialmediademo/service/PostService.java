@@ -37,7 +37,7 @@ public class PostService {
     return posts.stream().map(PostMapper::toDto).toList();
   }
 
-  public void createPost(Long userId, PostDto postDto) {
+  public PostDto createPost(Long userId, PostDto postDto) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
@@ -48,6 +48,7 @@ public class PostService {
     Post postEntity = PostMapper.toEntity(postDto);
     postEntity.setUser(userEntity);
     postRepository.save(postEntity);
+    return PostMapper.toDto(postEntity);
   }
 
   public PostDto updatePost(Long postId, PostDto updatedPost) {
