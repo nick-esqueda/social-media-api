@@ -1,5 +1,9 @@
 # TODOs
 
+TODO: log 401s (when request is sent to protected endpoint without Authorization header)
+
+TODO: handle ExpiredJwtException in JwtAuthFilter.
+
 TODO: decouple Role and GrantedAuthority (Role implements GrantedAuthority)
 
 - this is coupling the repository layer with the security layer. they should not depend on each other.

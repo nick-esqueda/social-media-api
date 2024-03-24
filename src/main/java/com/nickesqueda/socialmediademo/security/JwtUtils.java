@@ -1,7 +1,5 @@
 package com.nickesqueda.socialmediademo.security;
 
-import static com.nickesqueda.socialmediademo.security.SecurityConstants.*;
-
 import com.nickesqueda.socialmediademo.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,9 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 public class JwtUtils {
-  // TODO: extract into config and secret management.
+  // TODO: extract secret into secret management solution.
   private static final String SECRET =
       "507c4db58311630bdfa4ed5d4b8a562ca2f43370e03a3df411b3784a805681f7";
+  public static String SUBJECT = "sub";
+  public static String USERNAME = "username";
+  public static String ROLES = "roles";
 
   public static String generateJwt(Authentication authentication) {
     UserPrincipal currentUser = (UserPrincipal) authentication.getPrincipal();
