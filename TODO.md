@@ -12,9 +12,7 @@ TODO: decouple Role and GrantedAuthority (Role implements GrantedAuthority)
 
 TODO: create negative scenario postman API tests
 
-TODO: add created_at & updated_at columns
-
-TODO: AOP logging
+TODO: create a BaseEntity to store all common Entity fields and set other Entities to inherit that class
 
 TODO: add @NotNull to parameters
 

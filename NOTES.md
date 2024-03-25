@@ -29,3 +29,7 @@ DTOs allow you to decouple your API contract from your database schema, providin
 - run the application so the db update occurs (tables created automatically)
 
 - verify seed data was inserted into db (refer to DatabaseSeeder.java CommandLineRunner)
+
+## Misc Notes about This API
+
+- "updating" an Entity with the same exact content does not change the updatedAt time.

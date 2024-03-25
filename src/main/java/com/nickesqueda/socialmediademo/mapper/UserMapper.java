@@ -13,6 +13,7 @@ public class UserMapper {
     userEntity.setUsername(userCredentialsDto.getUsername());
     userEntity.setPasswordHash(passwordHash);
     userEntity.setRoles(Collections.singletonList(role));
+    // don't set createdAt/updatedAt. allow Spring Data JPA to set these automatically.
     return userEntity;
   }
 
@@ -22,6 +23,8 @@ public class UserMapper {
     userDto.setUsername(userEntity.getUsername());
     userDto.setRoles(userEntity.getRoles());
     userDto.setAuthToken(authToken);
+    userDto.setCreatedAt(userEntity.getCreatedAt());
+    userDto.setUpdatedAt(userEntity.getUpdatedAt());
     return userDto;
   }
 }

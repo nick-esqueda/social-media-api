@@ -12,6 +12,7 @@ public class CommentMapper {
     commentEntity.setContent(commentDto.getContent());
     commentEntity.setPost(postEntity);
     commentEntity.setUser(userEntity);
+    // don't set createdAt/updatedAt. allow Spring Data JPA to set these automatically.
     return commentEntity;
   }
 
@@ -19,6 +20,8 @@ public class CommentMapper {
     CommentDto commentDto = new CommentDto();
     commentDto.setId(commentEntity.getId());
     commentDto.setContent(commentEntity.getContent());
+    commentDto.setCreatedAt(commentEntity.getCreatedAt());
+    commentDto.setUpdatedAt(commentEntity.getUpdatedAt());
     return commentDto;
   }
 }
