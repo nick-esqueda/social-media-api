@@ -2,13 +2,13 @@
 
 TODO: log 401s (when request is sent to protected endpoint without Authorization header)
 
+TODO: don't throw exception on GET calls if user has expired JWT
+
 TODO: handle ExpiredJwtException in JwtAuthFilter.
 
 TODO: decouple Role and GrantedAuthority (Role implements GrantedAuthority)
 
 - this is coupling the repository layer with the security layer. they should not depend on each other.
-
-TODO: create positive scenario postman API tests
 
 TODO: create negative scenario postman API tests
 
@@ -27,14 +27,6 @@ TODO: parse JWT roles properly with a parser.
   at com.nickesqueda.socialmediademo.security.JwtAuthFilter.doFilterInternal(JwtAuthFilter.java:35) ~[classes/:na]
 
 TODO: create GET /user, PUT /user, DELETE /user
-
-TODO: set the currently authenticated UserEntity to be accessed anywhere (like the Authentication object) 
-
-- could also set the "username" of the Authentication object to be the Entity id
-
-- NOTE: UserEntity.equals is not passing when object is cast from Object to UserEntity, even though values are same.
-
-TODO: return proper response codes / ResponseEntities from controller endpoints
 
 TODO: "getCommentsByPostId", "getCommentsByUserId" - these are more idiomatic (instead of "getPostsComments")
 

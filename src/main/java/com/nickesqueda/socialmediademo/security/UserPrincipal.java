@@ -21,7 +21,6 @@ public record UserPrincipal(UserEntity userEntity) implements UserDetails {
 
   @Override
   public String getPassword() {
-    // TODO: does this need to be the plaintext password?
     return userEntity.getPasswordHash();
   }
 
