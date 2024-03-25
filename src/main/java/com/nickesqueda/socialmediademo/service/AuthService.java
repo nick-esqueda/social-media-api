@@ -6,11 +6,11 @@ import com.nickesqueda.socialmediademo.dto.UserCredentialsDto;
 import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.entity.Role;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
+import com.nickesqueda.socialmediademo.exception.UsernameNotAvailableException;
 import com.nickesqueda.socialmediademo.mapper.UserMapper;
 import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.JwtUtils;
-
 import com.nickesqueda.socialmediademo.security.UserPrincipal;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,14 +37,17 @@ public class AuthService {
   }
 
   public UserDto registerUser(UserCredentialsDto userCredentialsDto) {
+    String username = userCredentialsDto.getUsername();
+    if (userRepository.existsByUsername(username)) {
+      throw new UsernameNotAvailableException(username);
+    }
+
     Role role = roleRepository.retrieveByRoleNameOrElseThrow(USER);
     String passwordHash = passwordEncoder.encode(userCredentialsDto.getPassword());
     UserEntity userEntity = UserMapper.toEntity(userCredentialsDto, passwordHash, role);
     userRepository.save(userEntity);
 
-    Authentication authentication = authenticateUser(userCredentialsDto);
-    String authToken = JwtUtils.generateJwt(authentication);
-    return UserMapper.toDto(userEntity, authToken);
+    return passwordLogin(userCredentialsDto);
   }
 
   public UserDto passwordLogin(UserCredentialsDto userCredentialsDto) {
