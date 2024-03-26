@@ -2,17 +2,13 @@
 
 TODO: log 401s (when request is sent to protected endpoint without Authorization header)
 
-TODO: don't throw exception on GET calls if user has expired JWT
-
-TODO: handle ExpiredJwtException in JwtAuthFilter.
+TODO: handle ExpiredJwtException in JwtAuthFilter and return meaningful response message if possible.
 
 TODO: decouple Role and GrantedAuthority (Role implements GrantedAuthority)
 
 - this is coupling the repository layer with the security layer. they should not depend on each other.
 
 TODO: create negative scenario postman API tests
-
-TODO: create a BaseEntity to store all common Entity fields and set other Entities to inherit that class
 
 TODO: add @NotNull to parameters
 

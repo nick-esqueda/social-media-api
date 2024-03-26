@@ -26,7 +26,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
     log.debug("Authorization Header in request: {}", authorizationHeader);
 
-    if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+    if (!request.getMethod().equalsIgnoreCase("GET")
+        && authorizationHeader != null
+        && authorizationHeader.startsWith(BEARER)) {
       String authToken = authorizationHeader.substring(BEARER.length());
 
       // JWT VALIDATION OCCURS HERE WHEN EXTRACTING CLAIMS.
