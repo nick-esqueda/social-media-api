@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthFilter extends OncePerRequestFilter {
   public static String AUTHORIZATION_HEADER = "Authorization";
   public static String BEARER = "Bearer "; // trailing space " " is required.
+  public static String GET = "GET";
 
   @Override
   protected void doFilterInternal(
@@ -26,9 +27,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
     log.debug("Authorization Header in request: {}", authorizationHeader);
 
-    if (!request.getMethod().equalsIgnoreCase("GET")
+    if (!request.getMethod().equalsIgnoreCase(GET)
         && authorizationHeader != null
         && authorizationHeader.startsWith(BEARER)) {
+
       String authToken = authorizationHeader.substring(BEARER.length());
 
       // JWT VALIDATION OCCURS HERE WHEN EXTRACTING CLAIMS.
