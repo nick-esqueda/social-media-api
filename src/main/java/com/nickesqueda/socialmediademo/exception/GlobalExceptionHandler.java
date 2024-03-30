@@ -2,6 +2,9 @@ package com.nickesqueda.socialmediademo.exception;
 
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.List;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,24 +14,37 @@ public class GlobalExceptionHandler {
   @ResponseStatus(NOT_FOUND)
   @ExceptionHandler(ResourceNotFoundException.class)
   public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e) {
-    return new ErrorResponse(e.getMessage());
+    return ErrorResponse.builder().errorMessage(e.getMessage()).build();
   }
 
   @ResponseStatus(UNAUTHORIZED)
   @ExceptionHandler(UnauthorizedOperationException.class)
   public ErrorResponse handleUnauthorizedOperationException(UnauthorizedOperationException e) {
-    return new ErrorResponse(e.getMessage());
+    return ErrorResponse.builder().errorMessage(e.getMessage()).build();
   }
 
   @ResponseStatus(BAD_REQUEST)
   @ExceptionHandler(UsernameNotAvailableException.class)
   public ErrorResponse handleUsernameNotAvailableException(UsernameNotAvailableException e) {
-    return new ErrorResponse(e.getMessage());
+    return ErrorResponse.builder().errorMessage(e.getMessage()).build();
+  }
+
+  @ResponseStatus(BAD_REQUEST)
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    List<String> errorMessages =
+        e.getBindingResult().getFieldErrors().stream()
+            .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+            .toList();
+    return ErrorResponse.builder()
+        .errorMessage("Input validation failed")
+        .errorDetails(errorMessages)
+        .build();
   }
 
   @ResponseStatus(INTERNAL_SERVER_ERROR)
   @ExceptionHandler(RuntimeException.class)
   public ErrorResponse handleGenericException(RuntimeException e) {
-    return new ErrorResponse("Unhandled exception: " + e.toString());
+    return ErrorResponse.builder().errorMessage("Unhandled exception: " + e.toString()).build();
   }
 }

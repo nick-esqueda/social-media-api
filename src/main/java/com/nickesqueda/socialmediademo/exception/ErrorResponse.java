@@ -1,3 +1,8 @@
 package com.nickesqueda.socialmediademo.exception;
 
-public record ErrorResponse(String errorMessage) {}
+import lombok.Builder;
+
+import java.util.Collection;
+
+@Builder
+public record ErrorResponse(String errorMessage, Collection<?> errorDetails) {}

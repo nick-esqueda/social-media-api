@@ -1,5 +1,9 @@
 # TODOs
 
+TODO: reassign entity/result of persistence in service methods
+
+TODO: use trim() on all user text inputs before persisting.
+
 TODO: log 401s (when request is sent to protected endpoint without Authorization header)
 
 TODO: handle ExpiredJwtException in JwtAuthFilter and return meaningful response message if possible.
@@ -26,6 +30,31 @@ TODO: "getCommentsByPostId", "getCommentsByUserId" - these are more idiomatic (i
 
 TODO: add user bio, email, other data
 
+  @Column
+  private String firstName;
+
+  @Column
+  private String lastName;
+
+  @Column
+  private String email;
+
+  @Column
+  private String phoneNumber;
+
+  @Column
+  private LocalDate birthday;
+
+  @Column
+  private Integer age;
+
+  @Column
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
+
+  @Column
+  private String bio;
+
 TODO: endpoint to update user info (separate from register user. should go in UserController/Service)
 
 TODO: handle io.jsonwebtoken.ExpiredJwtException (thrown when parsing JWT in JwtFilter)
@@ -50,6 +79,11 @@ TODO: return Location header for POST requests?
 # Business Feature Ideas
 
 ## Likes
+
+## Reactions
+
+- "like", "love", "sad", "angry", "laugh", "confused"
+- alternative to likes?
 
 ## Followers
 
@@ -114,13 +148,17 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 
 ## Post Sharing / Re-posts
 
+## Last Login Time
+
 # Tech Feature Ideas
 
 - Custom exception handling
 
 - @ControllerAdvice for exception handling
 
-- Request validation
+- Request sanitization to encode special chars going into db and decode on the way out
+
+- Password strength validation and feedback on UI
 
 - Pagination
 

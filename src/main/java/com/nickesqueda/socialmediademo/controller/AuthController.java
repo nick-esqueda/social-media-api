@@ -5,6 +5,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import com.nickesqueda.socialmediademo.dto.UserCredentialsDto;
 import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +19,7 @@ public class AuthController {
 
   @PostMapping("/register")
   @ResponseStatus(CREATED)
-  public UserDto registerUser(@RequestBody UserCredentialsDto userCredentialsDto) {
+  public UserDto registerUser(@RequestBody @Valid UserCredentialsDto userCredentialsDto) {
     return authService.registerUser(userCredentialsDto);
   }
 

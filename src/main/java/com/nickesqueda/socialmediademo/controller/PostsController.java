@@ -6,6 +6,7 @@ import com.nickesqueda.socialmediademo.service.CommentService;
 import com.nickesqueda.socialmediademo.service.PostService;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,12 +37,13 @@ public class PostsController {
   @PostMapping("/{postId}/comments")
   @ResponseStatus(CREATED)
   public CommentDto createComment(
-      @PathVariable("postId") Long postId, @RequestBody CommentDto comment) {
+      @PathVariable("postId") Long postId, @RequestBody @Valid CommentDto comment) {
     return commentService.createComment(postId, comment);
   }
 
   @PutMapping("/{postId}")
-  public PostDto updatePost(@PathVariable("postId") Long postId, @RequestBody PostDto updatedPost) {
+  public PostDto updatePost(
+      @PathVariable("postId") Long postId, @RequestBody @Valid PostDto updatedPost) {
     return postService.updatePost(postId, updatedPost);
   }
 

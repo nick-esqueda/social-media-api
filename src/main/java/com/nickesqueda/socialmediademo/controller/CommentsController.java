@@ -2,6 +2,7 @@ package com.nickesqueda.socialmediademo.controller;
 
 import com.nickesqueda.socialmediademo.dto.CommentDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class CommentsController {
 
   @PutMapping("/{commentId}")
   public CommentDto updateComment(
-      @PathVariable("commentId") Long commentId, @RequestBody CommentDto updatedComment) {
+      @PathVariable("commentId") Long commentId, @RequestBody @Valid CommentDto updatedComment) {
     return commentService.updateComment(commentId, updatedComment);
   }
 
