@@ -2,6 +2,8 @@
 
 TODO: reassign entity/result of persistence in service methods
 
+TODO: log exceptions only once when they occur (logging aspect causes them to print for each method call)
+
 TODO: use trim() on all user text inputs before persisting.
 
 TODO: log 401s (when request is sent to protected endpoint without Authorization header)
@@ -151,10 +153,6 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 ## Last Login Time
 
 # Tech Feature Ideas
-
-- Custom exception handling
-
-- @ControllerAdvice for exception handling
 
 - Request sanitization to encode special chars going into db and decode on the way out
 

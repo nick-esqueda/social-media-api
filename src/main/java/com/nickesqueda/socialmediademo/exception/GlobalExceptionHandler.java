@@ -3,7 +3,7 @@ package com.nickesqueda.socialmediademo.exception;
 import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -40,6 +40,12 @@ public class GlobalExceptionHandler {
         .errorMessage("Input validation failed")
         .errorDetails(errorMessages)
         .build();
+  }
+
+  @ResponseStatus(BAD_REQUEST)
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    return ErrorResponse.builder().errorMessage("Database constraint violated").build();
   }
 
   @ResponseStatus(INTERNAL_SERVER_ERROR)
