@@ -45,18 +45,18 @@ public class DatabaseSeeder implements CommandLineRunner {
       roleRepository.save(userRole);
 
       String password = passwordEncoder.encode("password");
-      UserEntity user1 = new UserEntity("User 1", password, Collections.singletonList(userRole));
-      UserEntity user2 = new UserEntity("User 2", password, Collections.singletonList(userRole));
+      UserEntity user1 = new UserEntity("user1", password, Collections.singletonList(userRole));
+      UserEntity user2 = new UserEntity("user2", password, Collections.singletonList(userRole));
       userRepository.save(user1);
       userRepository.save(user2);
 
-      Post post1 = new Post("This is User 1's first post.", user1);
-      Post post2 = new Post("This is User 2's first post.", user2);
+      Post post1 = new Post("This is user1's first post.", user1);
+      Post post2 = new Post("This is user2's first post.", user2);
       postRepository.save(post1);
       postRepository.save(post2);
 
-      Comment comment1 = new Comment("Hi User 2, I'm User 1.", post2, user1);
-      Comment comment2 = new Comment("Hi User 1, I'm User 2.", post1, user2);
+      Comment comment1 = new Comment("Hi user2, I'm user1.", post2, user1);
+      Comment comment2 = new Comment("Hi user1, I'm user2.", post1, user2);
       commentRepository.save(comment1);
       commentRepository.save(comment2);
     }
