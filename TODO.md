@@ -4,6 +4,8 @@ TODO: reassign entity/result of persistence in service methods
 
 TODO: log exceptions only once when they occur (logging aspect causes them to print for each method call)
 
+TODO: username case insensitivity
+
 TODO: use trim() on all user text inputs before persisting.
 
 TODO: log 401s (when request is sent to protected endpoint without Authorization header)

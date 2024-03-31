@@ -1,15 +1,15 @@
 spring:
   datasource:
     # TODO: extract into secret management solution
-    url: jdbc:mysql://localhost:3306/social_media_demo_db?useSSL=false&serverTimezone=UTC
-    username: nick
-    password: ASDFlkj1234!@#$
+    url: jdbc:mysql://db:3306/social_media_starter?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: social_media_starter_user
+    password: password
   jpa:
     hibernate:
       ddl-auto: update # should be "validate" for PROD
     show-sql: false
-
 logging:
   level:
     com.nickesqueda: INFO
+    org.springframework: INFO
     org.springframework.security: INFO

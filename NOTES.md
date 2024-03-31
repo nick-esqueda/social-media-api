@@ -33,3 +33,11 @@ DTOs allow you to decouple your API contract from your database schema, providin
 ## Misc Notes about This API
 
 - "updating" an Entity with the same exact content does not change the updatedAt time.
+
+## Starting docker containers individually
+
+docker network create network-test1 (run once)
+
+docker run --name mysql-test2 --network=network-test1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=social_media_starter_user -e MYSQL_PASSWORD=password -e MYSQL_DATABASE=social_media_starter -d mysql
+
+docker run --name social-media-demo-test3 --network=network-test1 -p 8080:8080 -d social-media-starter:test3
