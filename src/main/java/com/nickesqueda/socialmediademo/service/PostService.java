@@ -47,7 +47,7 @@ public class PostService {
 
     Post postEntity = PostMapper.toEntity(postDto);
     postEntity.setUser(userEntity);
-    postRepository.save(postEntity);
+    postEntity = postRepository.save(postEntity);
     return PostMapper.toDto(postEntity);
   }
 
@@ -61,7 +61,7 @@ public class PostService {
     }
 
     postEntity.setContent(updatedPost.getContent());
-    postRepository.save(postEntity);
+    postEntity = postRepository.save(postEntity);
     return PostMapper.toDto(postEntity);
   }
 

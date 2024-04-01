@@ -59,7 +59,7 @@ public class CommentService {
     UserEntity currentUser = userRepository.retrieveOrElseThrow(currentUserId);
 
     Comment commentEntity = CommentMapper.toEntity(commentDto, postEntity, currentUser);
-    commentRepository.save(commentEntity);
+    commentEntity = commentRepository.save(commentEntity);
     return CommentMapper.toDto(commentEntity);
   }
 
@@ -73,7 +73,7 @@ public class CommentService {
     }
 
     commentEntity.setContent(updatedComment.getContent());
-    commentRepository.save(commentEntity);
+    commentEntity = commentRepository.save(commentEntity);
     return CommentMapper.toDto(commentEntity);
   }
 

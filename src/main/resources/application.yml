@@ -1,8 +1,8 @@
 spring:
   datasource:
     # TODO: extract into secret management solution
-    url: jdbc:mysql://db:3306/social_media_starter?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-    username: social_media_starter_user
+    url: jdbc:mysql://db:3306/social_media_demo?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: social_media_demo_user
     password: password
   jpa:
     hibernate:
