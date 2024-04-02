@@ -10,6 +10,7 @@ import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
+import java.util.Collection;
 import java.util.Collections;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,8 +46,11 @@ public class DatabaseSeeder implements CommandLineRunner {
       roleRepository.save(userRole);
 
       String password = passwordEncoder.encode("password");
-      UserEntity user1 = new UserEntity("user1", password, Collections.singletonList(userRole));
-      UserEntity user2 = new UserEntity("user2", password, Collections.singletonList(userRole));
+      Collection<Role> roles = Collections.singletonList(userRole);
+      UserEntity user1 =
+          UserEntity.builder().username("user1").passwordHash(password).roles(roles).build();
+      UserEntity user2 =
+          UserEntity.builder().username("user2").passwordHash(password).roles(roles).build();
       userRepository.save(user1);
       userRepository.save(user2);
 

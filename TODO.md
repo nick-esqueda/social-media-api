@@ -1,7 +1,5 @@
 # TODOs
 
-TODO: reassign entity/result of persistence in service methods
-
 TODO: log exceptions only once when they occur (logging aspect causes them to print for each method call)
 
 TODO: username case insensitivity
@@ -17,8 +15,6 @@ TODO: decouple Role and GrantedAuthority (Role implements GrantedAuthority)
 - this is coupling the repository layer with the security layer. they should not depend on each other.
 
 TODO: create negative scenario postman API tests
-
-TODO: add @NotNull to parameters
 
 TODO: parse JWT roles properly with a parser.
 

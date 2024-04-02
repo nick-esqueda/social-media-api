@@ -1,7 +1,6 @@
 package com.nickesqueda.socialmediademo.dto;
 
-import static com.nickesqueda.socialmediademo.util.ValidationConstants.VALIDATION_PATTERN_USERNAME;
-import static com.nickesqueda.socialmediademo.util.ValidationConstants.VALIDATION_PATTERN_MESSAGE_USERNAME;
+import static com.nickesqueda.socialmediademo.util.ValidationConstants.*;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -11,11 +10,11 @@ import lombok.Data;
 @Data
 public class UserCredentialsDto {
   @NotNull
-  @Size(min = 2, max = 32)
-  @Pattern(regexp = VALIDATION_PATTERN_USERNAME, message = VALIDATION_PATTERN_MESSAGE_USERNAME)
+  @Size(min = USERNAME_MIN_LENGTH, max = USERNAME_MAX_LENGTH)
+  @Pattern(regexp = USERNAME_PATTERN, message = USERNAME_PATTERN_MESSAGE)
   private String username;
 
   @NotNull
-  @Size(min = 8, max = 64)
+  @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
   private String password;
 }
