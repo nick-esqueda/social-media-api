@@ -17,10 +17,32 @@ public class UserMapper {
     return userEntity;
   }
 
+  public static UserDto toDto(UserEntity userEntity) {
+    UserDto userDto = new UserDto();
+    userDto.setId(userEntity.getId());
+    userDto.setUsername(userEntity.getUsername());
+    userDto.setFirstName(userEntity.getFirstName());
+    userDto.setLastName(userEntity.getLastName());
+    userDto.setEmail(userEntity.getEmail());
+    userDto.setPhoneNumber(userEntity.getPhoneNumber());
+    userDto.setGender(userEntity.getGender());
+    userDto.setBio(userEntity.getBio());
+    userDto.setRoles(userEntity.getRoles());
+    userDto.setCreatedAt(userEntity.getCreatedAt());
+    userDto.setUpdatedAt(userEntity.getUpdatedAt());
+    return userDto;
+  }
+
   public static UserDto toDto(UserEntity userEntity, String authToken) {
     UserDto userDto = new UserDto();
     userDto.setId(userEntity.getId());
     userDto.setUsername(userEntity.getUsername());
+    userDto.setFirstName(userEntity.getFirstName());
+    userDto.setLastName(userEntity.getLastName());
+    userDto.setEmail(userEntity.getEmail());
+    userDto.setPhoneNumber(userEntity.getPhoneNumber());
+    userDto.setGender(userEntity.getGender());
+    userDto.setBio(userEntity.getBio());
     userDto.setRoles(userEntity.getRoles());
     userDto.setAuthToken(authToken);
     userDto.setCreatedAt(userEntity.getCreatedAt());

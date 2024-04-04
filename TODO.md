@@ -1,5 +1,12 @@
 # TODOs
 
+TODO: DELETE /user - requires either JWT blacklisting or switching to session-based auth.
+
+- JWT blacklist logic negates most of the benefits of JWT auth in the first place, since a DB/cache call needs to be made each request.
+- however, the JWT blacklist storage would still be less, as it only needs to hold to revoked JWTs until their original expiry time.
+
+TODO: add /v1/ to API endpoints (versioning)
+
 TODO: log exceptions only once when they occur (logging aspect causes them to print for each method call)
 
 TODO: username case insensitivity
