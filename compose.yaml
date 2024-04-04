@@ -3,19 +3,24 @@ services:
     build: .
     ports:
       - 8080:8080
+    secrets:
+      - db.properties
     depends_on:
       db:
         condition: service_healthy
   db:
     image: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_USER=social_media_demo_user
-      - MYSQL_PASSWORD=password
-      - MYSQL_DATABASE=social_media_demo
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_DATABASE=${DB_NAME}
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "$$MYSQL_USER", "-p$$MYSQL_PASSWORD" ]
       start_period: 10s
       interval: 5s
       timeout: 5s
       retries: 50
+secrets:
+  db.properties:
+    file: .env

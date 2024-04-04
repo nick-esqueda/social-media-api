@@ -1,9 +1,10 @@
 spring:
+  config:
+    import: file:/run/secrets/db.properties
   datasource:
-    # TODO: extract into secret management solution
-    url: jdbc:mysql://db:3306/social_media_demo?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-    username: social_media_demo_user
-    password: password
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update # should be "validate" for PROD
