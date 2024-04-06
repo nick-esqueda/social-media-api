@@ -1,20 +1,17 @@
 package com.nickesqueda.socialmediademo.controller;
 
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 import com.nickesqueda.socialmediademo.dto.CommentDto;
 import com.nickesqueda.socialmediademo.dto.PostDto;
 import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
 import com.nickesqueda.socialmediademo.service.PostService;
-import java.util.List;
-
 import com.nickesqueda.socialmediademo.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
-
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/api/users")
