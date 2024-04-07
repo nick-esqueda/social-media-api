@@ -13,5 +13,4 @@ public class SocialMediaDemoApplication {
   public static void main(String[] args) {
     SpringApplication.run(SocialMediaDemoApplication.class, args);
   }
-
 }

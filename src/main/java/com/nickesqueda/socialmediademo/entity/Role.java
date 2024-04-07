@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * TODO: convert to enum
- * TODO: how to implement GrantedAuthority if it is an enum? can you still return a string?
- * TODO: set roleName to not writeable? (only use the pre-defined roles from table)
+ * TODO: convert to enum TODO: how to implement GrantedAuthority if it is an enum? can you still
+ * return a string? TODO: set roleName to not writeable? (only use the pre-defined roles from table)
  */
 @Data
 @NoArgsConstructor

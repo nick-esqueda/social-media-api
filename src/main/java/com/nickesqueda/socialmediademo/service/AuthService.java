@@ -2,12 +2,13 @@ package com.nickesqueda.socialmediademo.service;
 
 import static com.nickesqueda.socialmediademo.security.SecurityConstants.USER;
 
+import com.nickesqueda.socialmediademo.dto.LoginResponseDto;
+import com.nickesqueda.socialmediademo.dto.RegistrationResponseDto;
 import com.nickesqueda.socialmediademo.dto.UserCredentialsDto;
-import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.entity.Role;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.UsernameNotAvailableException;
-import com.nickesqueda.socialmediademo.mapper.UserMapper;
+import com.nickesqueda.socialmediademo.mapper.AuthMapper;
 import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.JwtUtils;
@@ -36,7 +37,7 @@ public class AuthService {
     this.roleRepository = roleRepository;
   }
 
-  public UserDto registerUser(UserCredentialsDto userCredentialsDto) {
+  public RegistrationResponseDto registerUser(UserCredentialsDto userCredentialsDto) {
     String username = userCredentialsDto.getUsername();
     if (userRepository.existsByUsername(username)) {
       throw new UsernameNotAvailableException(username);
@@ -44,17 +45,18 @@ public class AuthService {
 
     Role role = roleRepository.retrieveByRoleNameOrElseThrow(USER);
     String passwordHash = passwordEncoder.encode(userCredentialsDto.getPassword());
-    UserEntity userEntity = UserMapper.toEntity(userCredentialsDto, passwordHash, role);
+    UserEntity userEntity = AuthMapper.toEntity(userCredentialsDto, passwordHash, role);
     userRepository.save(userEntity);
 
-    return passwordLogin(userCredentialsDto);
+    LoginResponseDto loginResponseDto = passwordLogin(userCredentialsDto);
+    return AuthMapper.toDto(loginResponseDto, userEntity.getRoles());
   }
 
-  public UserDto passwordLogin(UserCredentialsDto userCredentialsDto) {
+  public LoginResponseDto passwordLogin(UserCredentialsDto userCredentialsDto) {
     Authentication authentication = authenticateUser(userCredentialsDto);
     String authToken = JwtUtils.generateJwt(authentication);
     UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-    return UserMapper.toDto(principal.getUserEntity(), authToken);
+    return AuthMapper.toDto(principal.getUserEntity(), authToken);
   }
 
   public Authentication authenticateUser(UserCredentialsDto userCredentialsDto) {

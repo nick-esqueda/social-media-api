@@ -1,5 +1,6 @@
 package com.nickesqueda.socialmediademo.service;
 
+import com.nickesqueda.socialmediademo.dto.LoginResponseDto;
 import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
@@ -21,7 +22,7 @@ public class UserService {
     return UserMapper.toDto(userEntity);
   }
 
-  public UserDto updateUser(Long userId, UserDto updatedUser) {
+  public UserDto updateUser(Long userId, LoginResponseDto updatedUser) {
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userId)) {

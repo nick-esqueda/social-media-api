@@ -1,7 +1,6 @@
 package com.nickesqueda.socialmediademo.dto;
 
 import static com.nickesqueda.socialmediademo.util.ValidationConstants.*;
-import static com.nickesqueda.socialmediademo.util.ValidationConstants.BIO_MAX_LENGTH;
 
 import com.nickesqueda.socialmediademo.model.Gender;
 import jakarta.validation.constraints.*;
@@ -10,7 +9,7 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class LoginResponseDto {
   private Long id;
 
   @NotNull
@@ -39,4 +38,6 @@ public class UserDto {
   @PastOrPresent private Instant createdAt;
 
   @PastOrPresent private Instant updatedAt;
+
+  private String authToken;
 }

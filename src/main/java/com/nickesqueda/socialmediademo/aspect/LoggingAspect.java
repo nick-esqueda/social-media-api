@@ -33,7 +33,9 @@ public class LoggingAspect {
     log.trace("Calling {} with arguments: {}", methodName, methodArgs);
   }
 
-  @AfterReturning(pointcut = "allControllerMethods() || allServiceMethods()", returning = "returnValue")
+  @AfterReturning(
+      pointcut = "allControllerMethods() || allServiceMethods()",
+      returning = "returnValue")
   public void logMethodReturnInfoMode(JoinPoint joinPoint, Object returnValue) {
     String methodName = joinPoint.getSignature().toShortString();
     String logMessage = "Returning from {} with value: {}";

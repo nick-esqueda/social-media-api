@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import com.nickesqueda.socialmediademo.dto.CommentDto;
+import com.nickesqueda.socialmediademo.dto.LoginResponseDto;
 import com.nickesqueda.socialmediademo.dto.PostDto;
 import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
@@ -29,14 +30,12 @@ public class UsersController {
 
   @GetMapping("/{userId}")
   public UserDto getUser(@PathVariable("userId") Long userId) {
-    // TODO: should not include authToken property in response.
-    // create a new DTO.
     return userService.getUser(userId);
   }
 
   @PutMapping("/{userId}")
   public UserDto updateUser(
-      @PathVariable("userId") Long userId, @RequestBody @Valid UserDto updatedUser) {
+      @PathVariable("userId") Long userId, @RequestBody @Valid LoginResponseDto updatedUser) {
     return userService.updateUser(userId, updatedUser);
   }
 
