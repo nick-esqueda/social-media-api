@@ -5,11 +5,11 @@ import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
-import com.nickesqueda.socialmediademo.mapper.PostMapper;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import java.util.List;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,15 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
   private final PostRepository postRepository;
   private final UserRepository userRepository;
+  private final ModelMapper modelMapper;
 
-  public PostService(PostRepository postRepository, UserRepository userRepository) {
+  public PostService(
+      PostRepository postRepository, UserRepository userRepository, ModelMapper modelMapper) {
     this.postRepository = postRepository;
     this.userRepository = userRepository;
+    this.modelMapper = modelMapper;
   }
 
   public PostDto getPost(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
-    return PostMapper.toDto(postEntity);
+    return modelMapper.map(postEntity, PostDto.class);
   }
 
   public List<PostDto> getUsersPosts(Long userId) {
@@ -34,7 +37,7 @@ public class PostService {
     }
 
     List<Post> posts = postRepository.findByUserId(userId);
-    return posts.stream().map(PostMapper::toDto).toList();
+    return posts.stream().map(postEntity -> modelMapper.map(postEntity, PostDto.class)).toList();
   }
 
   public PostDto createPost(Long userId, PostDto postDto) {
@@ -45,10 +48,10 @@ public class PostService {
       throw new UnauthorizedOperationException();
     }
 
-    Post postEntity = PostMapper.toEntity(postDto);
+    Post postEntity = modelMapper.map(postDto, Post.class);
     postEntity.setUser(userEntity);
     postEntity = postRepository.save(postEntity);
-    return PostMapper.toDto(postEntity);
+    return modelMapper.map(postEntity, PostDto.class);
   }
 
   public PostDto updatePost(Long postId, PostDto updatedPost) {
@@ -62,7 +65,7 @@ public class PostService {
 
     postEntity.setContent(updatedPost.getContent());
     postEntity = postRepository.save(postEntity);
-    return PostMapper.toDto(postEntity);
+    return modelMapper.map(postEntity, PostDto.class);
   }
 
   public void deletePost(Long postId) {

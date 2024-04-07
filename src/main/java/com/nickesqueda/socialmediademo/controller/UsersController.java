@@ -35,7 +35,7 @@ public class UsersController {
 
   @PutMapping("/{userId}")
   public UserDto updateUser(
-      @PathVariable("userId") Long userId, @RequestBody @Valid LoginResponseDto updatedUser) {
+      @PathVariable("userId") Long userId, @RequestBody @Valid UserDto updatedUser) {
     return userService.updateUser(userId, updatedUser);
   }
 

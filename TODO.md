@@ -1,5 +1,17 @@
 # TODOs
 
+TODO: add @NotNull to method parameters
+
+TODO: postman positive tests: verify created Entity is returned when requesting for all parent's records.
+
+TODO: handle exception where Gender in request doesn't match any Enum value
+
+TODO: create separate DTOs for request and response
+
+- this ensures clients don't unintentionally modify createdAt/updateAt and clarifies the API contract.
+
+TODO: reset password logic
+
 TODO: DELETE /user - requires either JWT blacklisting or switching to session-based auth.
 
 - JWT blacklist logic negates most of the benefits of JWT auth in the first place, since a DB/cache call needs to be made each request.
