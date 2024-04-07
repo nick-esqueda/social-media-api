@@ -9,18 +9,16 @@ import com.nickesqueda.socialmediademo.service.CommentService;
 import com.nickesqueda.socialmediademo.service.PostService;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/posts")
 public class PostsController {
+
   private final PostService postService;
   private final CommentService commentService;
-
-  public PostsController(PostService postService, CommentService commentService) {
-    this.postService = postService;
-    this.commentService = commentService;
-  }
 
   @GetMapping("/{postId}")
   public PostDto getPost(@PathVariable("postId") Long postId) {

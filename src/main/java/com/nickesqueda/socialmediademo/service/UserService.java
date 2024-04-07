@@ -5,18 +5,16 @@ import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
+
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
-
-  public UserService(UserRepository userRepository, ModelMapper modelMapper) {
-    this.userRepository = userRepository;
-    this.modelMapper = modelMapper;
-  }
 
   public UserDto getUser(Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);

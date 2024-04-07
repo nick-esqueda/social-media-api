@@ -12,6 +12,8 @@ import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.JwtUtils;
 import com.nickesqueda.socialmediademo.security.UserPrincipal;
+import java.util.Collections;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,28 +21,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-
+@RequiredArgsConstructor
 @Service
 public class AuthService {
+
   private final AuthenticationManager authenticationManager;
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final ModelMapper modelMapper;
-
-  public AuthService(
-      AuthenticationManager authenticationManager,
-      UserRepository userRepository,
-      RoleRepository roleRepository,
-      PasswordEncoder passwordEncoder,
-      ModelMapper modelMapper) {
-    this.authenticationManager = authenticationManager;
-    this.passwordEncoder = passwordEncoder;
-    this.userRepository = userRepository;
-    this.roleRepository = roleRepository;
-    this.modelMapper = modelMapper;
-  }
 
   public RegistrationResponseDto registerUser(UserCredentialsDto userCredentialsDto) {
     String username = userCredentialsDto.getUsername();

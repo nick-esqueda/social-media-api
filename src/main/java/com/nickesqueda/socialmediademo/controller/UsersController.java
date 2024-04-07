@@ -4,7 +4,6 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import com.nickesqueda.socialmediademo.dto.CommentDto;
-import com.nickesqueda.socialmediademo.dto.LoginResponseDto;
 import com.nickesqueda.socialmediademo.dto.PostDto;
 import com.nickesqueda.socialmediademo.dto.UserDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
@@ -12,21 +11,16 @@ import com.nickesqueda.socialmediademo.service.PostService;
 import com.nickesqueda.socialmediademo.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
   private final UserService userService;
   private final PostService postService;
   private final CommentService commentService;
-
-  public UsersController(
-      UserService userService, PostService postService, CommentService commentService) {
-    this.userService = userService;
-    this.postService = postService;
-    this.commentService = commentService;
-  }
 
   @GetMapping("/{userId}")
   public UserDto getUser(@PathVariable("userId") Long userId) {

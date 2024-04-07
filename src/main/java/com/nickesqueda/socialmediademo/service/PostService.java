@@ -9,22 +9,18 @@ import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 public class PostService {
+
   private final PostRepository postRepository;
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
-
-  public PostService(
-      PostRepository postRepository, UserRepository userRepository, ModelMapper modelMapper) {
-    this.postRepository = postRepository;
-    this.userRepository = userRepository;
-    this.modelMapper = modelMapper;
-  }
 
   public PostDto getPost(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);

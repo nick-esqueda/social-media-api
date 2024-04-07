@@ -11,27 +11,19 @@ import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 public class CommentService {
+
   private final CommentRepository commentRepository;
   private final PostRepository postRepository;
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
-
-  public CommentService(
-      CommentRepository commentRepository,
-      PostRepository postRepository,
-      UserRepository userRepository,
-      ModelMapper modelMapper) {
-    this.commentRepository = commentRepository;
-    this.postRepository = postRepository;
-    this.userRepository = userRepository;
-    this.modelMapper = modelMapper;
-  }
 
   public CommentDto getComment(Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);

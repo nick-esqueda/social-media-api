@@ -5,16 +5,15 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import com.nickesqueda.socialmediademo.dto.CommentDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/comments")
 public class CommentsController {
-  private final CommentService commentService;
 
-  public CommentsController(CommentService commentService) {
-    this.commentService = commentService;
-  }
+  private final CommentService commentService;
 
   @GetMapping("/{commentId}")
   public CommentDto getComment(@PathVariable("commentId") Long commentId) {

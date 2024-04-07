@@ -7,16 +7,15 @@ import com.nickesqueda.socialmediademo.dto.RegistrationResponseDto;
 import com.nickesqueda.socialmediademo.dto.UserCredentialsDto;
 import com.nickesqueda.socialmediademo.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-  private final AuthService authService;
 
-  public AuthController(AuthService authService) {
-    this.authService = authService;
-  }
+  private final AuthService authService;
 
   @PostMapping("/register")
   @ResponseStatus(CREATED)
