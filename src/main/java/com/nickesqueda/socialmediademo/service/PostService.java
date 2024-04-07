@@ -1,6 +1,7 @@
 package com.nickesqueda.socialmediademo.service;
 
-import com.nickesqueda.socialmediademo.dto.PostDto;
+import com.nickesqueda.socialmediademo.dto.PostRequestDto;
+import com.nickesqueda.socialmediademo.dto.PostResponseDto;
 import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
@@ -22,21 +23,21 @@ public class PostService {
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
 
-  public PostDto getPost(Long postId) {
+  public PostResponseDto getPost(Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
-    return modelMapper.map(postEntity, PostDto.class);
+    return modelMapper.map(postEntity, PostResponseDto.class);
   }
 
-  public List<PostDto> getUsersPosts(Long userId) {
+  public List<PostResponseDto> getUsersPosts(Long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
 
     List<Post> posts = postRepository.findByUserId(userId);
-    return posts.stream().map(postEntity -> modelMapper.map(postEntity, PostDto.class)).toList();
+    return posts.stream().map(postEntity -> modelMapper.map(postEntity, PostResponseDto.class)).toList();
   }
 
-  public PostDto createPost(Long userId, PostDto postDto) {
+  public PostResponseDto createPost(Long userId, PostRequestDto newPost) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
@@ -44,13 +45,13 @@ public class PostService {
       throw new UnauthorizedOperationException();
     }
 
-    Post postEntity = modelMapper.map(postDto, Post.class);
+    Post postEntity = modelMapper.map(newPost, Post.class);
     postEntity.setUser(userEntity);
     postEntity = postRepository.save(postEntity);
-    return modelMapper.map(postEntity, PostDto.class);
+    return modelMapper.map(postEntity, PostResponseDto.class);
   }
 
-  public PostDto updatePost(Long postId, PostDto updatedPost) {
+  public PostResponseDto updatePost(Long postId, PostRequestDto updatedPost) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity userEntity = postEntity.getUser();
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
@@ -59,9 +60,10 @@ public class PostService {
       throw new UnauthorizedOperationException();
     }
 
-    postEntity.setContent(updatedPost.getContent());
+    modelMapper.map(updatedPost, postEntity);
     postEntity = postRepository.save(postEntity);
-    return modelMapper.map(postEntity, PostDto.class);
+
+    return modelMapper.map(postEntity, PostResponseDto.class);
   }
 
   public void deletePost(Long postId) {

@@ -1,6 +1,7 @@
 package com.nickesqueda.socialmediademo.service;
 
-import com.nickesqueda.socialmediademo.dto.CommentDto;
+import com.nickesqueda.socialmediademo.dto.CommentRequestDto;
+import com.nickesqueda.socialmediademo.dto.CommentResponseDto;
 import com.nickesqueda.socialmediademo.entity.Comment;
 import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
@@ -25,47 +26,47 @@ public class CommentService {
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
 
-  public CommentDto getComment(Long commentId) {
+  public CommentResponseDto getComment(Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
-    return modelMapper.map(commentEntity, CommentDto.class);
+    return modelMapper.map(commentEntity, CommentResponseDto.class);
   }
 
-  public List<CommentDto> getPostsComments(Long postId) {
+  public List<CommentResponseDto> getPostsComments(Long postId) {
     if (!postRepository.existsById(postId)) {
       throw new ResourceNotFoundException(Post.class, postId);
     }
 
     List<Comment> comments = commentRepository.findByPostId(postId);
     return comments.stream()
-        .map(commentEntity -> modelMapper.map(commentEntity, CommentDto.class))
+        .map(commentEntity -> modelMapper.map(commentEntity, CommentResponseDto.class))
         .toList();
   }
 
-  public List<CommentDto> getUsersComments(Long userId) {
+  public List<CommentResponseDto> getUsersComments(Long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
 
     List<Comment> comments = commentRepository.findByUserId(userId);
     return comments.stream()
-        .map(commentEntity -> modelMapper.map(commentEntity, CommentDto.class))
+        .map(commentEntity -> modelMapper.map(commentEntity, CommentResponseDto.class))
         .toList();
   }
 
-  public CommentDto createComment(Long postId, CommentDto commentDto) {
+  public CommentResponseDto createComment(Long postId, CommentRequestDto commentRequestDto) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
     UserEntity currentUser = userRepository.retrieveOrElseThrow(currentUserId);
 
-    Comment commentEntity = modelMapper.map(commentDto, Comment.class);
+    Comment commentEntity = modelMapper.map(commentRequestDto, Comment.class);
     commentEntity.setUser(currentUser);
     commentEntity.setPost(postEntity);
     commentEntity = commentRepository.save(commentEntity);
 
-    return modelMapper.map(commentEntity, CommentDto.class);
+    return modelMapper.map(commentEntity, CommentResponseDto.class);
   }
 
-  public CommentDto updateComment(Long commentId, CommentDto updatedComment) {
+  public CommentResponseDto updateComment(Long commentId, CommentRequestDto updatedComment) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity userEntity = commentEntity.getUser();
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
@@ -74,9 +75,10 @@ public class CommentService {
       throw new UnauthorizedOperationException();
     }
 
-    commentEntity.setContent(updatedComment.getContent());
+    modelMapper.map(updatedComment, commentEntity);
     commentEntity = commentRepository.save(commentEntity);
-    return modelMapper.map(commentEntity, CommentDto.class);
+
+    return modelMapper.map(commentEntity, CommentResponseDto.class);
   }
 
   public void deleteComment(Long commentId) {

@@ -3,8 +3,10 @@ package com.nickesqueda.socialmediademo.controller;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
-import com.nickesqueda.socialmediademo.dto.CommentDto;
-import com.nickesqueda.socialmediademo.dto.PostDto;
+import com.nickesqueda.socialmediademo.dto.CommentRequestDto;
+import com.nickesqueda.socialmediademo.dto.CommentResponseDto;
+import com.nickesqueda.socialmediademo.dto.PostRequestDto;
+import com.nickesqueda.socialmediademo.dto.PostResponseDto;
 import com.nickesqueda.socialmediademo.service.CommentService;
 import com.nickesqueda.socialmediademo.service.PostService;
 import jakarta.validation.Valid;
@@ -21,25 +23,25 @@ public class PostsController {
   private final CommentService commentService;
 
   @GetMapping("/{postId}")
-  public PostDto getPost(@PathVariable("postId") Long postId) {
+  public PostResponseDto getPost(@PathVariable("postId") Long postId) {
     return postService.getPost(postId);
   }
 
   @GetMapping("/{postId}/comments")
-  public List<CommentDto> getPostsComments(@PathVariable("postId") Long postId) {
+  public List<CommentResponseDto> getPostsComments(@PathVariable("postId") Long postId) {
     return commentService.getPostsComments(postId);
   }
 
   @PostMapping("/{postId}/comments")
   @ResponseStatus(CREATED)
-  public CommentDto createComment(
-      @PathVariable("postId") Long postId, @RequestBody @Valid CommentDto comment) {
-    return commentService.createComment(postId, comment);
+  public CommentResponseDto createComment(
+      @PathVariable("postId") Long postId, @RequestBody @Valid CommentRequestDto newComment) {
+    return commentService.createComment(postId, newComment);
   }
 
   @PutMapping("/{postId}")
-  public PostDto updatePost(
-      @PathVariable("postId") Long postId, @RequestBody @Valid PostDto updatedPost) {
+  public PostResponseDto updatePost(
+      @PathVariable("postId") Long postId, @RequestBody @Valid PostRequestDto updatedPost) {
     return postService.updatePost(postId, updatedPost);
   }
 

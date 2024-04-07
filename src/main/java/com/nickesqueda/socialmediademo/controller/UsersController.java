@@ -3,9 +3,7 @@ package com.nickesqueda.socialmediademo.controller;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
-import com.nickesqueda.socialmediademo.dto.CommentDto;
-import com.nickesqueda.socialmediademo.dto.PostDto;
-import com.nickesqueda.socialmediademo.dto.UserDto;
+import com.nickesqueda.socialmediademo.dto.*;
 import com.nickesqueda.socialmediademo.service.CommentService;
 import com.nickesqueda.socialmediademo.service.PostService;
 import com.nickesqueda.socialmediademo.service.UserService;
@@ -18,36 +16,37 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
+
   private final UserService userService;
   private final PostService postService;
   private final CommentService commentService;
 
   @GetMapping("/{userId}")
-  public UserDto getUser(@PathVariable("userId") Long userId) {
+  public UserResponseDto getUser(@PathVariable("userId") Long userId) {
     return userService.getUser(userId);
   }
 
   @PutMapping("/{userId}")
-  public UserDto updateUser(
-      @PathVariable("userId") Long userId, @RequestBody @Valid UserDto updatedUser) {
+  public UserResponseDto updateUser(
+      @PathVariable("userId") Long userId, @RequestBody @Valid UserRequestDto updatedUser) {
     return userService.updateUser(userId, updatedUser);
   }
 
   @GetMapping("/{userId}/posts")
-  public List<PostDto> getUsersPosts(@PathVariable("userId") Long userId) {
+  public List<PostResponseDto> getUsersPosts(@PathVariable("userId") Long userId) {
     return postService.getUsersPosts(userId);
   }
 
   @GetMapping("/{userId}/comments")
-  public List<CommentDto> getUsersComments(@PathVariable("userId") Long userId) {
+  public List<CommentResponseDto> getUsersComments(@PathVariable("userId") Long userId) {
     return commentService.getUsersComments(userId);
   }
 
   @PostMapping("/{userId}/posts")
   @ResponseStatus(CREATED)
-  public PostDto createPost(
-      @PathVariable("userId") Long userId, @RequestBody @Valid PostDto postDto) {
-    return postService.createPost(userId, postDto);
+  public PostResponseDto createPost(
+      @PathVariable("userId") Long userId, @RequestBody @Valid PostRequestDto newPost) {
+    return postService.createPost(userId, newPost);
   }
 
   @DeleteMapping("/{userId}/posts")

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UserCredentialsDto {
+public class AuthCredentialsDto {
   @NotNull
   @Size(min = USERNAME_MIN_LENGTH, max = USERNAME_MAX_LENGTH)
   @Pattern(regexp = USERNAME_PATTERN, message = USERNAME_PATTERN_MESSAGE)

@@ -97,14 +97,22 @@ TODO: return Location header for POST requests?
 
 # Business Feature Ideas
 
-## Likes
+## Likes (Posts/Comments)
+
+## Followers
+
+## Saved Posts/Comments
+
+## Replies (on comments)
+
+## Notifications
+
+## Post Sharing / Re-posts
 
 ## Reactions
 
 - "like", "love", "sad", "angry", "laugh", "confused"
 - alternative to likes?
-
-## Followers
 
 ## Public/Private Posts
 
@@ -164,8 +172,6 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 - User can choose to post a Post or Comment at a certain time in the future.
 
 ## Direct Messages
-
-## Post Sharing / Re-posts
 
 ## Last Login Time
 

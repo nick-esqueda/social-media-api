@@ -5,14 +5,11 @@ import static com.nickesqueda.socialmediademo.util.ValidationConstants.BIO_MAX_L
 
 import com.nickesqueda.socialmediademo.model.Gender;
 import jakarta.validation.constraints.*;
-import java.time.Instant;
 import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class UserDto {
-  private Long id;
-
+public class UserRequestDto {
   @NotNull
   @Size(min = USERNAME_MIN_LENGTH, max = USERNAME_MAX_LENGTH)
   @Pattern(regexp = USERNAME_PATTERN, message = USERNAME_PATTERN_MESSAGE)
@@ -35,8 +32,4 @@ public class UserDto {
 
   @Size(min = BIO_MIN_LENGTH, max = BIO_MAX_LENGTH)
   private String bio;
-
-  @PastOrPresent private Instant createdAt;
-
-  @PastOrPresent private Instant updatedAt;
 }

@@ -7,7 +7,7 @@ import java.time.Instant;
 import lombok.Data;
 
 @Data
-public class PostDto {
+public class PostResponseDto {
   private Long id;
 
   @NotNull

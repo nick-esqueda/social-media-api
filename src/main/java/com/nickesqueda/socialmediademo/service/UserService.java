@@ -1,6 +1,7 @@
 package com.nickesqueda.socialmediademo.service;
 
-import com.nickesqueda.socialmediademo.dto.UserDto;
+import com.nickesqueda.socialmediademo.dto.UserRequestDto;
+import com.nickesqueda.socialmediademo.dto.UserResponseDto;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
@@ -16,12 +17,12 @@ public class UserService {
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
 
-  public UserDto getUser(Long userId) {
+  public UserResponseDto getUser(Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
-    return modelMapper.map(userEntity, UserDto.class);
+    return modelMapper.map(userEntity, UserResponseDto.class);
   }
 
-  public UserDto updateUser(Long userId, UserDto updatedUser) {
+  public UserResponseDto updateUser(Long userId, UserRequestDto updatedUser) {
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userId)) {
@@ -32,6 +33,6 @@ public class UserService {
     modelMapper.map(updatedUser, userEntity);
     userEntity = userRepository.save(userEntity);
 
-    return modelMapper.map(userEntity, UserDto.class);
+    return modelMapper.map(userEntity, UserResponseDto.class);
   }
 }
