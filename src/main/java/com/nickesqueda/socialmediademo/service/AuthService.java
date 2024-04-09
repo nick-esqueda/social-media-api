@@ -2,9 +2,9 @@ package com.nickesqueda.socialmediademo.service;
 
 import static com.nickesqueda.socialmediademo.security.SecurityConstants.USER;
 
+import com.nickesqueda.socialmediademo.dto.AuthCredentialsDto;
 import com.nickesqueda.socialmediademo.dto.LoginResponseDto;
 import com.nickesqueda.socialmediademo.dto.RegistrationResponseDto;
-import com.nickesqueda.socialmediademo.dto.AuthCredentialsDto;
 import com.nickesqueda.socialmediademo.entity.Role;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.UsernameNotAvailableException;

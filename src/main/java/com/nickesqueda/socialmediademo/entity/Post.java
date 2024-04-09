@@ -1,5 +1,7 @@
 package com.nickesqueda.socialmediademo.entity;
 
+import static com.nickesqueda.socialmediademo.util.ValidationConstants.POST_MAX_LENGTH;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +17,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "posts")
 public class Post extends BaseEntity {
-  @Column(nullable = false)
+  @Column(nullable = false, length = POST_MAX_LENGTH)
   private String content;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
