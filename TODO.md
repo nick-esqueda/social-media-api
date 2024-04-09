@@ -1,14 +1,8 @@
 # TODOs
 
-TODO: add @NotNull to method parameters
-
 TODO: postman positive tests: verify created Entity is returned when requesting for all parent's records.
 
 TODO: handle exception where Gender in request doesn't match any Enum value
-
-TODO: create separate DTOs for request and response
-
-- this ensures clients don't unintentionally modify createdAt/updateAt and clarifies the API contract.
 
 TODO: reset password logic
 
@@ -43,39 +37,6 @@ TODO: parse JWT roles properly with a parser.
   at com.nickesqueda.socialmediademo.security.JwtUtils.extractUserId(JwtUtils.java:56) ~[classes/:na]
   at com.nickesqueda.socialmediademo.security.JwtAuthFilter.doFilterInternal(JwtAuthFilter.java:35) ~[classes/:na]
 
-TODO: create GET /user, PUT /user, DELETE /user
-
-TODO: "getCommentsByPostId", "getCommentsByUserId" - these are more idiomatic (instead of "getPostsComments")
-
-TODO: add user bio, email, other data
-
-  @Column
-  private String firstName;
-
-  @Column
-  private String lastName;
-
-  @Column
-  private String email;
-
-  @Column
-  private String phoneNumber;
-
-  @Column
-  private LocalDate birthday;
-
-  @Column
-  private Integer age;
-
-  @Column
-  @Enumerated(EnumType.STRING)
-  private Gender gender;
-
-  @Column
-  private String bio;
-
-TODO: endpoint to update user info (separate from register user. should go in UserController/Service)
-
 TODO: handle io.jsonwebtoken.ExpiredJwtException (thrown when parsing JWT in JwtFilter)
 
 TODO: logic for creating admin accounts. separate endpoint?
@@ -85,11 +46,6 @@ TODO: optimize number of DB queries.
 - could use raw SQL with @Query
 
 TODO: see if JPA .save() is necessary when updating (i.e. post.setContent(...))
-
-TODO: use id field as the jwt principal/subject. this will allow for the below method-level auth:
-
-- example: @PreAuthorize("#username == authentication.principal.username")
-- more: https://www.baeldung.com/spring-security-method-security
 
 TODO: JWT object for JWTs? instead of String. may help with serializing/deserializing
 
