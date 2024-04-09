@@ -12,6 +12,7 @@ import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.JwtUtils;
 import com.nickesqueda.socialmediademo.security.UserPrincipal;
+import jakarta.validation.constraints.NotNull;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,8 +21,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @RequiredArgsConstructor
+@Validated
 @Service
 public class AuthService {
 
@@ -31,7 +34,7 @@ public class AuthService {
   private final RoleRepository roleRepository;
   private final ModelMapper modelMapper;
 
-  public RegistrationResponseDto registerUser(AuthCredentialsDto authCredentialsDto) {
+  public RegistrationResponseDto registerUser(@NotNull AuthCredentialsDto authCredentialsDto) {
     String username = authCredentialsDto.getUsername();
     if (userRepository.existsByUsername(username)) {
       throw new UsernameNotAvailableException(username);
@@ -48,7 +51,7 @@ public class AuthService {
     return registrationResponseDto;
   }
 
-  public LoginResponseDto passwordLogin(AuthCredentialsDto authCredentialsDto) {
+  public LoginResponseDto passwordLogin(@NotNull AuthCredentialsDto authCredentialsDto) {
     Authentication authentication = authenticateUser(authCredentialsDto);
     String authToken = JwtUtils.generateJwt(authentication);
     UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
@@ -59,7 +62,7 @@ public class AuthService {
     return loginResponseDto;
   }
 
-  public Authentication authenticateUser(AuthCredentialsDto authCredentialsDto) {
+  public Authentication authenticateUser(@NotNull AuthCredentialsDto authCredentialsDto) {
     String username = authCredentialsDto.getUsername();
     String password = authCredentialsDto.getPassword();
     Authentication authentication =
@@ -67,7 +70,7 @@ public class AuthService {
     return authenticationManager.authenticate(authentication);
   }
 
-  public UserEntity createUserEntity(AuthCredentialsDto authCredentialsDto) {
+  public UserEntity createUserEntity(@NotNull AuthCredentialsDto authCredentialsDto) {
     String passwordHash = passwordEncoder.encode(authCredentialsDto.getPassword());
     Role role = roleRepository.retrieveByRoleNameOrElseThrow(USER);
     return UserEntity.builder()

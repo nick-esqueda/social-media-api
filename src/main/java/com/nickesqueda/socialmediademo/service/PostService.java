@@ -9,13 +9,16 @@ import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @RequiredArgsConstructor
+@Validated
 @Service
 public class PostService {
 
@@ -23,21 +26,23 @@ public class PostService {
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
 
-  public PostResponseDto getPost(Long postId) {
+  public PostResponseDto getPost(@NotNull Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     return modelMapper.map(postEntity, PostResponseDto.class);
   }
 
-  public List<PostResponseDto> getUsersPosts(Long userId) {
+  public List<PostResponseDto> getUsersPosts(@NotNull Long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
 
     List<Post> posts = postRepository.findByUserId(userId);
-    return posts.stream().map(postEntity -> modelMapper.map(postEntity, PostResponseDto.class)).toList();
+    return posts.stream()
+        .map(postEntity -> modelMapper.map(postEntity, PostResponseDto.class))
+        .toList();
   }
 
-  public PostResponseDto createPost(Long userId, PostRequestDto newPost) {
+  public PostResponseDto createPost(@NotNull Long userId, @NotNull PostRequestDto newPost) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 
@@ -51,7 +56,7 @@ public class PostService {
     return modelMapper.map(postEntity, PostResponseDto.class);
   }
 
-  public PostResponseDto updatePost(Long postId, PostRequestDto updatedPost) {
+  public PostResponseDto updatePost(@NotNull Long postId, @NotNull PostRequestDto updatedPost) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity userEntity = postEntity.getUser();
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
@@ -66,7 +71,7 @@ public class PostService {
     return modelMapper.map(postEntity, PostResponseDto.class);
   }
 
-  public void deletePost(Long postId) {
+  public void deletePost(@NotNull Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity userEntity = postEntity.getUser();
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
@@ -79,7 +84,7 @@ public class PostService {
   }
 
   @Transactional
-  public void deleteUsersPosts(Long userId) {
+  public void deleteUsersPosts(@NotNull Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 

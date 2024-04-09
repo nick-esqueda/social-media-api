@@ -12,30 +12,20 @@ import com.nickesqueda.socialmediademo.repository.RoleRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import java.util.Collection;
 import java.util.Collections;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
+
   private final RoleRepository roleRepository;
   private final UserRepository userRepository;
   private final PostRepository postRepository;
   private final CommentRepository commentRepository;
   private final PasswordEncoder passwordEncoder;
-
-  public DatabaseSeeder(
-      RoleRepository roleRepository,
-      UserRepository userRepository,
-      PostRepository postRepository,
-      CommentRepository commentRepository,
-      PasswordEncoder passwordEncoder) {
-    this.roleRepository = roleRepository;
-    this.userRepository = userRepository;
-    this.postRepository = postRepository;
-    this.commentRepository = commentRepository;
-    this.passwordEncoder = passwordEncoder;
-  }
 
   @Override
   public void run(String... args) throws Exception {

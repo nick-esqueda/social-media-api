@@ -11,13 +11,16 @@ import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @RequiredArgsConstructor
+@Validated
 @Service
 public class CommentService {
 
@@ -26,12 +29,12 @@ public class CommentService {
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
 
-  public CommentResponseDto getComment(Long commentId) {
+  public CommentResponseDto getComment(@NotNull Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     return modelMapper.map(commentEntity, CommentResponseDto.class);
   }
 
-  public List<CommentResponseDto> getPostsComments(Long postId) {
+  public List<CommentResponseDto> getPostsComments(@NotNull Long postId) {
     if (!postRepository.existsById(postId)) {
       throw new ResourceNotFoundException(Post.class, postId);
     }
@@ -42,7 +45,7 @@ public class CommentService {
         .toList();
   }
 
-  public List<CommentResponseDto> getUsersComments(Long userId) {
+  public List<CommentResponseDto> getUsersComments(@NotNull Long userId) {
     if (!userRepository.existsById(userId)) {
       throw new ResourceNotFoundException(UserEntity.class, userId);
     }
@@ -53,7 +56,8 @@ public class CommentService {
         .toList();
   }
 
-  public CommentResponseDto createComment(Long postId, CommentRequestDto commentRequestDto) {
+  public CommentResponseDto createComment(
+      @NotNull Long postId, @NotNull CommentRequestDto commentRequestDto) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
     UserEntity currentUser = userRepository.retrieveOrElseThrow(currentUserId);
@@ -66,7 +70,8 @@ public class CommentService {
     return modelMapper.map(commentEntity, CommentResponseDto.class);
   }
 
-  public CommentResponseDto updateComment(Long commentId, CommentRequestDto updatedComment) {
+  public CommentResponseDto updateComment(
+      @NotNull Long commentId, @NotNull CommentRequestDto updatedComment) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity userEntity = commentEntity.getUser();
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
@@ -81,7 +86,7 @@ public class CommentService {
     return modelMapper.map(commentEntity, CommentResponseDto.class);
   }
 
-  public void deleteComment(Long commentId) {
+  public void deleteComment(@NotNull Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity userEntity = commentEntity.getUser();
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
@@ -94,7 +99,7 @@ public class CommentService {
   }
 
   @Transactional
-  public void deletePostsComments(Long postId) {
+  public void deletePostsComments(@NotNull Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity userEntity = postEntity.getUser();
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
@@ -107,7 +112,7 @@ public class CommentService {
   }
 
   @Transactional
-  public void deleteUsersComments(Long userId) {
+  public void deleteUsersComments(@NotNull Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
 

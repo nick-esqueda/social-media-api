@@ -5,12 +5,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 public class JwtUtils {
   // TODO: extract secret into secret management solution.
   private static final String SECRET =
@@ -19,7 +23,7 @@ public class JwtUtils {
   public static String USERNAME = "username";
   public static String ROLES = "roles";
 
-  public static String generateJwt(Authentication authentication) {
+  public static String generateJwt(@NotNull Authentication authentication) {
     UserPrincipal currentUser = (UserPrincipal) authentication.getPrincipal();
     String userId = currentUser.getId().toString();
     Map<String, Object> claims = createClaims(currentUser);
@@ -38,19 +42,19 @@ public class JwtUtils {
         .compact();
   }
 
-  public static Long extractUserId(String token) {
+  public static Long extractUserId(@NotBlank String token) {
     Claims claims = extractAllClaimsAndValidateJwt(token);
     return Long.valueOf(claims.getSubject());
   }
 
-  public static Collection<GrantedAuthority> extractGrantedAuthorities(String token) {
+  public static Collection<GrantedAuthority> extractGrantedAuthorities(@NotBlank String token) {
     Claims claims = extractAllClaimsAndValidateJwt(token);
     // TODO: handle unchecked cast warning.
     List<Map<String, String>> roles = (List<Map<String, String>>) claims.get(ROLES);
     return roles.stream().map(Role::new).collect(Collectors.toList());
   }
 
-  private static Claims extractAllClaimsAndValidateJwt(String token) {
+  private static Claims extractAllClaimsAndValidateJwt(@NotBlank String token) {
     return Jwts.parserBuilder()
         .setSigningKey(getSignKey())
         .build()
@@ -63,7 +67,7 @@ public class JwtUtils {
     return Keys.hmacShaKeyFor(keyInBytes);
   }
 
-  public static Map<String, Object> createClaims(UserPrincipal userPrincipal) {
+  public static Map<String, Object> createClaims(@NotNull UserPrincipal userPrincipal) {
     Map<String, Object> claims = new HashMap<>();
     claims.put(SUBJECT, userPrincipal.getId());
     claims.put(USERNAME, userPrincipal.getUsername());
