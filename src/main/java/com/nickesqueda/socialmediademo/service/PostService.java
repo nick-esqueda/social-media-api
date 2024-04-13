@@ -24,6 +24,7 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final UserRepository userRepository;
+  private final AuthUtils authUtils;
   private final ModelMapper modelMapper;
 
   public PostResponseDto getPost(@NotNull Long postId) {
@@ -44,7 +45,7 @@ public class PostService {
 
   public PostResponseDto createPost(@NotNull Long userId, @NotNull PostRequestDto newPost) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userId)) {
       throw new UnauthorizedOperationException();
@@ -59,7 +60,7 @@ public class PostService {
   public PostResponseDto updatePost(@NotNull Long postId, @NotNull PostRequestDto updatedPost) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity userEntity = postEntity.getUser();
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
@@ -74,7 +75,7 @@ public class PostService {
   public void deletePost(@NotNull Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity userEntity = postEntity.getUser();
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
@@ -86,7 +87,7 @@ public class PostService {
   @Transactional
   public void deleteUsersPosts(@NotNull Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();

@@ -6,18 +6,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+
   public static String AUTHORIZATION_HEADER = "Authorization";
   public static String BEARER = "Bearer "; // trailing space " " is required.
   public static String GET = "GET";
+  
+  private final AuthUtils authUtils;
 
   @Override
   protected void doFilterInternal(
@@ -39,7 +45,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       UsernamePasswordAuthenticationToken authentication =
           new UsernamePasswordAuthenticationToken(userId, null, roles);
 
-      AuthUtils.setSecurityContext(authentication);
+      authUtils.setSecurityContext(authentication);
       log.info("Authentication for request successful. User ID: {}", userId);
     }
 

@@ -7,11 +7,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthUtils {
-  public static Long getCurrentAuthenticatedUserId() {
+
+  public Long getCurrentAuthenticatedUserId() {
     return (Long) getCurrentAuthentication().getPrincipal();
   }
 
-  public static Authentication getCurrentAuthentication() {
+  public Authentication getCurrentAuthentication() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication == null || !authentication.isAuthenticated()) {
       // TODO: throw a custom exception.
@@ -25,7 +26,7 @@ public class AuthUtils {
    *     use this as the currently authenticated user. The authenticated user can be accessed
    *     anywhere by getting it from the SecurityContext.
    */
-  public static void setSecurityContext(Authentication authentication) {
+  public void setSecurityContext(Authentication authentication) {
     SecurityContext context = SecurityContextHolder.createEmptyContext();
     context.setAuthentication(authentication);
     SecurityContextHolder.setContext(context);

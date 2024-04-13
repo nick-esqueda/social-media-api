@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final AuthUtils authUtils;
   private final ModelMapper modelMapper;
 
   public UserResponseDto getUser(@NotNull Long userId) {
@@ -26,7 +27,7 @@ public class UserService {
   }
 
   public UserResponseDto updateUser(@NotNull Long userId, @NotNull UserRequestDto updatedUser) {
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userId)) {
       throw new UnauthorizedOperationException();

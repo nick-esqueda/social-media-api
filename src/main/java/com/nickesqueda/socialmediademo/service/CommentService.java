@@ -27,6 +27,7 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final PostRepository postRepository;
   private final UserRepository userRepository;
+  private final AuthUtils authUtils;
   private final ModelMapper modelMapper;
 
   public CommentResponseDto getComment(@NotNull Long commentId) {
@@ -59,7 +60,7 @@ public class CommentService {
   public CommentResponseDto createComment(
       @NotNull Long postId, @NotNull CommentRequestDto commentRequestDto) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
     UserEntity currentUser = userRepository.retrieveOrElseThrow(currentUserId);
 
     Comment commentEntity = modelMapper.map(commentRequestDto, Comment.class);
@@ -74,7 +75,7 @@ public class CommentService {
       @NotNull Long commentId, @NotNull CommentRequestDto updatedComment) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity userEntity = commentEntity.getUser();
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
@@ -89,7 +90,7 @@ public class CommentService {
   public void deleteComment(@NotNull Long commentId) {
     Comment commentEntity = commentRepository.retrieveOrElseThrow(commentId);
     UserEntity userEntity = commentEntity.getUser();
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
@@ -102,7 +103,7 @@ public class CommentService {
   public void deletePostsComments(@NotNull Long postId) {
     Post postEntity = postRepository.retrieveOrElseThrow(postId);
     UserEntity userEntity = postEntity.getUser();
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
@@ -114,7 +115,7 @@ public class CommentService {
   @Transactional
   public void deleteUsersComments(@NotNull Long userId) {
     UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
-    Long currentUserId = AuthUtils.getCurrentAuthenticatedUserId();
+    Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userEntity.getId())) {
       throw new UnauthorizedOperationException();
