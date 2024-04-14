@@ -7,9 +7,10 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Collection;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
