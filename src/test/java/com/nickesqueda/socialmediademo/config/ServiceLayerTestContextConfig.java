@@ -1,8 +1,10 @@
 package com.nickesqueda.socialmediademo.config;
 
+import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import com.nickesqueda.socialmediademo.service.CommentService;
 import com.nickesqueda.socialmediademo.service.PostService;
 import com.nickesqueda.socialmediademo.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -15,6 +17,7 @@ public class ServiceLayerTestContextConfig {
 
   @MockBean private UserRepository userRepository;
   @MockBean private PostRepository postRepository;
+  @MockBean private CommentRepository commentRepository;
   @MockBean private AuthUtils authUtils;
 
   @Bean
@@ -25,6 +28,12 @@ public class ServiceLayerTestContextConfig {
   @Bean
   public PostService postService(ModelMapper modelMapper) {
     return new PostService(postRepository, userRepository, authUtils, modelMapper);
+  }
+
+  @Bean
+  public CommentService commentService(ModelMapper modelMapper) {
+    return new CommentService(
+        commentRepository, postRepository, userRepository, authUtils, modelMapper);
   }
 
   @Bean

@@ -54,7 +54,7 @@ class PostServiceTest {
   private List<PostResponseDto> expectedUsersPostsList;
 
   @BeforeEach
-  public void setUp() {
+  public void beforeEach() {
     testPostId = 1L;
     testUserId = 1L;
     unauthorizedUserId = 2L;
