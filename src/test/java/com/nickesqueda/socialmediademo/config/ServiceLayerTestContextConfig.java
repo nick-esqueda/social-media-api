@@ -1,8 +1,10 @@
-package com.nickesqueda.socialmediademo.service;
+package com.nickesqueda.socialmediademo.config;
 
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import com.nickesqueda.socialmediademo.service.PostService;
+import com.nickesqueda.socialmediademo.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;

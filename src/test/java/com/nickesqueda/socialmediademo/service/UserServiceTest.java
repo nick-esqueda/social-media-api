@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.nickesqueda.socialmediademo.config.ServiceLayerTestContextConfig;
 import com.nickesqueda.socialmediademo.dto.UserRequestDto;
 import com.nickesqueda.socialmediademo.dto.UserResponseDto;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
