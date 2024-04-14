@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import com.nickesqueda.socialmediademo.dto.UserRequestDto;
 import com.nickesqueda.socialmediademo.dto.UserResponseDto;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
+import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
@@ -19,6 +20,12 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+/**
+ * NOTE: ServiceLayerTestContextConfig.class is imported to use the @TestConfiguration that will be
+ * used by @ExtendWith(SpringExtension.class) to configure a Spring Context.
+ * ValidationAutoConfiguration.class is imported to enable @NotNull and @Validated on service
+ * classes.
+ */
 @Import({ServiceLayerTestContextConfig.class, ValidationAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 class UserServiceTest {
@@ -29,7 +36,7 @@ class UserServiceTest {
   @Autowired private UserRepository userRepository;
   @Autowired private AuthUtils authUtils;
   private Long testUserId;
-  private Long unauthenticatedUserId;
+  private Long unauthorizedUserId;
   private UserEntity userEntity;
   private UserEntity updatedUserEntity;
   private UserRequestDto userRequestDto;
@@ -40,7 +47,7 @@ class UserServiceTest {
   @BeforeEach
   public void setUp() {
     testUserId = 1L;
-    unauthenticatedUserId = 2L;
+    unauthorizedUserId = 2L;
     userEntity = UserEntity.builder().id(testUserId).username(TEST_STRING).build();
     updatedUserEntity = userEntity.toBuilder().firstName(TEST_STRING).build();
     userRequestDto = UserRequestDto.builder().username(TEST_STRING).build();
@@ -52,7 +59,7 @@ class UserServiceTest {
 
   @Test
   void getUser_ShouldReturnUser_GivenValidId() {
-    when(userRepository.retrieveOrElseThrow(anyLong())).thenReturn(userEntity);
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenReturn(userEntity);
 
     UserResponseDto result = userService.getUser(testUserId);
 
@@ -69,9 +76,18 @@ class UserServiceTest {
   }
 
   @Test
+  void getUser_ShouldThrow_GivenUserDoesNotExist() {
+    testUserId = 10000L;
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> userService.getUser(testUserId))
+        .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
   void updateUser_ShouldReturnUser_GivenValidArgs() {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
-    when(userRepository.retrieveOrElseThrow(anyLong())).thenReturn(userEntity);
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenReturn(userEntity);
     when(userRepository.save(any(UserEntity.class))).thenReturn(updatedUserEntity);
 
     UserResponseDto result = userService.updateUser(testUserId, userRequestDtoUpdate);
@@ -91,10 +107,20 @@ class UserServiceTest {
   }
 
   @Test
-  void updateUser_ShouldThrow_GivenUnauthenticatedUserId() {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+  void updateUser_ShouldThrow_GivenUnauthorizedUserId() {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
 
-    assertThatThrownBy(() -> userService.updateUser(unauthenticatedUserId, userRequestDto))
+    assertThatThrownBy(() -> userService.updateUser(testUserId, userRequestDto))
         .isInstanceOf(UnauthorizedOperationException.class);
+  }
+
+  @Test
+  void updateUser_ShouldThrow_GivenUserDoesNotExist() {
+    testUserId = 10000L;
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> userService.updateUser(testUserId, userRequestDtoUpdate))
+        .isInstanceOf(ResourceNotFoundException.class);
   }
 }
