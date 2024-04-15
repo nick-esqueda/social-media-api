@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.nickesqueda.socialmediademo.config.ServiceLayerTestContextConfig;
+import com.nickesqueda.socialmediademo.dto.CommentRequestDto;
 import com.nickesqueda.socialmediademo.dto.CommentResponseDto;
 import com.nickesqueda.socialmediademo.entity.Comment;
 import com.nickesqueda.socialmediademo.entity.Post;
@@ -49,6 +50,7 @@ class CommentServiceTest {
   private Post postEntityStub;
   private Comment commentEntityStub;
   private CommentResponseDto expectedCommentResponseDto;
+  private CommentRequestDto createCommentRequestDto;
   private List<Comment> postsCommentsStub;
   private List<Comment> usersCommentsStub;
   private List<CommentResponseDto> expectedPostsCommentsList;
@@ -72,6 +74,7 @@ class CommentServiceTest {
             .build();
     expectedCommentResponseDto =
         CommentResponseDto.builder().id(testCommentId).content(TEST_STRING).build();
+    createCommentRequestDto = CommentRequestDto.builder().content(TEST_STRING).build();
 
     Comment listComment1 = Comment.builder().id(2L).content(TEST_STRING).build();
     Comment listComment2 = Comment.builder().id(3L).content(TEST_STRING).build();
@@ -166,6 +169,49 @@ class CommentServiceTest {
     when(userRepository.existsById(testUserId)).thenReturn(false);
 
     assertThatThrownBy(() -> commentService.getUsersComments(testUserId))
+        .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void createComment_ShouldReturnComment_GivenValidArgs() {
+    when(postRepository.retrieveOrElseThrow(testPostId)).thenReturn(postEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenReturn(userEntityStub);
+    when(commentRepository.save(any(Comment.class))).thenReturn(commentEntityStub);
+
+    CommentResponseDto result = commentService.createComment(testPostId, createCommentRequestDto);
+
+    assertThat(result).isEqualTo(expectedCommentResponseDto);
+  }
+
+  @Test
+  void createComment_ShouldThrow_GivenNullArgs() {
+    assertThatThrownBy(() -> commentService.createComment(null, createCommentRequestDto))
+        .isNotInstanceOf(NullPointerException.class)
+        .hasMessageContaining("must not be null");
+
+    assertThatThrownBy(() -> commentService.createComment(testPostId, null))
+        .isNotInstanceOf(NullPointerException.class)
+        .hasMessageContaining("must not be null");
+  }
+
+  @Test
+  void createComment_ShouldThrow_GivenPostDoesNotExist() {
+    testPostId = 10000L;
+    when(postRepository.retrieveOrElseThrow(testPostId)).thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> commentService.createComment(testPostId, createCommentRequestDto))
+        .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void createComment_ShouldThrow_GivenUserDoesNotExist() {
+    testUserId = 10000L;
+    when(postRepository.retrieveOrElseThrow(testPostId)).thenReturn(postEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> commentService.createComment(testPostId, createCommentRequestDto))
         .isInstanceOf(ResourceNotFoundException.class);
   }
 }
