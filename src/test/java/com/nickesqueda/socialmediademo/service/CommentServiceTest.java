@@ -11,6 +11,7 @@ import com.nickesqueda.socialmediademo.entity.Comment;
 import com.nickesqueda.socialmediademo.entity.Post;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
 import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
+import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
@@ -51,6 +52,9 @@ class CommentServiceTest {
   private Comment commentEntityStub;
   private CommentResponseDto expectedCommentResponseDto;
   private CommentRequestDto createCommentRequestDto;
+  private CommentRequestDto updateCommentRequestDto;
+  private CommentResponseDto expectedUpdateCommentResponseDto;
+  private Comment updatedCommentEntityStub;
   private List<Comment> postsCommentsStub;
   private List<Comment> usersCommentsStub;
   private List<CommentResponseDto> expectedPostsCommentsList;
@@ -72,9 +76,13 @@ class CommentServiceTest {
             .user(userEntityStub)
             .post(postEntityStub)
             .build();
+    updatedCommentEntityStub = commentEntityStub.toBuilder().content(TEST_STRING2).build();
     expectedCommentResponseDto =
         CommentResponseDto.builder().id(testCommentId).content(TEST_STRING).build();
     createCommentRequestDto = CommentRequestDto.builder().content(TEST_STRING).build();
+    updateCommentRequestDto = CommentRequestDto.builder().content(TEST_STRING2).build();
+    expectedUpdateCommentResponseDto =
+        CommentResponseDto.builder().id(testCommentId).content(TEST_STRING2).build();
 
     Comment listComment1 = Comment.builder().id(2L).content(TEST_STRING).build();
     Comment listComment2 = Comment.builder().id(3L).content(TEST_STRING).build();
@@ -213,5 +221,153 @@ class CommentServiceTest {
 
     assertThatThrownBy(() -> commentService.createComment(testPostId, createCommentRequestDto))
         .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void updateComment_ShouldReturnUpdatedComment_GivenValidArgs() {
+    when(commentRepository.retrieveOrElseThrow(testCommentId)).thenReturn(commentEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+    when(commentRepository.save(commentEntityStub)).thenReturn(updatedCommentEntityStub);
+
+    CommentResponseDto result =
+        commentService.updateComment(testCommentId, updateCommentRequestDto);
+
+    assertThat(result).isEqualTo(expectedUpdateCommentResponseDto);
+  }
+
+  @Test
+  void updateComment_ShouldThrow_GivenNullArgs() {
+    assertThatThrownBy(() -> commentService.updateComment(null, updateCommentRequestDto))
+        .isNotInstanceOf(NullPointerException.class)
+        .hasMessageContaining("must not be null");
+
+    assertThatThrownBy(() -> commentService.updateComment(testCommentId, null))
+        .isNotInstanceOf(NullPointerException.class)
+        .hasMessageContaining("must not be null");
+  }
+
+  @Test
+  void updateComment_ShouldThrow_GivenUnauthorizedUser() {
+    when(commentRepository.retrieveOrElseThrow(testCommentId)).thenReturn(commentEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    assertThatThrownBy(() -> commentService.updateComment(testCommentId, updateCommentRequestDto))
+        .isInstanceOf(UnauthorizedOperationException.class);
+  }
+
+  @Test
+  void updateComment_ShouldThrow_GivenCommentDoesNotExist() {
+    testCommentId = 10000L;
+    when(commentRepository.retrieveOrElseThrow(testCommentId))
+        .thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> commentService.updateComment(testCommentId, updateCommentRequestDto))
+        .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void deleteComment_ShouldInvokeDelete_GivenValidId() {
+    when(commentRepository.retrieveOrElseThrow(testCommentId)).thenReturn(commentEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+
+    commentService.deleteComment(testCommentId);
+
+    verify(commentRepository, times(1)).deleteById(testCommentId);
+  }
+
+  @Test
+  void deleteComment_ShouldThrow_GivenNullId() {
+    assertThatThrownBy(() -> commentService.deleteComment(null))
+        .isNotInstanceOf(NullPointerException.class)
+        .hasMessageContaining("must not be null");
+  }
+
+  @Test
+  void deleteComment_ShouldThrow_GivenUnauthorizedUser() {
+    when(commentRepository.retrieveOrElseThrow(testCommentId)).thenReturn(commentEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    assertThatThrownBy(() -> commentService.deleteComment(testCommentId))
+        .isInstanceOf(UnauthorizedOperationException.class);
+  }
+
+  @Test
+  void deleteComment_ShouldThrow_GivenCommentDoesNotExist() {
+    testCommentId = 10000L;
+    when(commentRepository.retrieveOrElseThrow(testCommentId))
+        .thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> commentService.deleteComment(testCommentId))
+        .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void deletePostsComments_ShouldInvokeDelete_GivenValidId() {
+    when(postRepository.retrieveOrElseThrow(testPostId)).thenReturn(postEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+
+    commentService.deletePostsComments(testPostId);
+
+    verify(commentRepository, times(1)).deleteByPostId(testPostId);
+  }
+
+  @Test
+  void deletePostsComments_ShouldThrow_GivenPostDoesNotExist() {
+    testPostId = 10000L;
+    when(postRepository.retrieveOrElseThrow(testPostId)).thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> commentService.deletePostsComments(testPostId))
+        .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void deletePostsComments_ShouldThrow_GivenNullId() {
+    assertThatThrownBy(() -> commentService.deletePostsComments(null))
+        .isNotInstanceOf(NullPointerException.class)
+        .hasMessageContaining("must not be null");
+  }
+
+  @Test
+  void deletePostsComments_ShouldThrow_GivenUnauthorizedUser() {
+    when(postRepository.retrieveOrElseThrow(testPostId)).thenReturn(postEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    assertThatThrownBy(() -> commentService.deletePostsComments(testPostId))
+        .isInstanceOf(UnauthorizedOperationException.class);
+  }
+
+  @Test
+  void deleteUsersComments_ShouldInvokeDelete_GivenValidId() {
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenReturn(userEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
+
+    commentService.deleteUsersComments(testUserId);
+
+    verify(commentRepository, times(1)).deleteByUserId(testUserId);
+  }
+
+  @Test
+  void deleteUsersComments_ShouldThrow_GivenUserDoesNotExist() {
+    testUserId = 10000L;
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenThrow(ResourceNotFoundException.class);
+
+    assertThatThrownBy(() -> commentService.deleteUsersComments(testUserId))
+        .isInstanceOf(ResourceNotFoundException.class);
+  }
+
+  @Test
+  void deleteUsersComments_ShouldThrow_GivenNullId() {
+    assertThatThrownBy(() -> commentService.deleteUsersComments(null))
+        .isNotInstanceOf(NullPointerException.class)
+        .hasMessageContaining("must not be null");
+  }
+
+  @Test
+  void deleteUsersComments_ShouldThrow_GivenUnauthorizedUser() {
+    when(userRepository.retrieveOrElseThrow(testUserId)).thenReturn(userEntityStub);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    assertThatThrownBy(() -> commentService.deleteUsersComments(testUserId))
+        .isInstanceOf(UnauthorizedOperationException.class);
   }
 }

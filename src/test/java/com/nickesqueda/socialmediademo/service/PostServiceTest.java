@@ -235,7 +235,7 @@ class PostServiceTest {
     testPostId = 10000L;
     when(postRepository.retrieveOrElseThrow(testPostId)).thenThrow(ResourceNotFoundException.class);
 
-    assertThatThrownBy(() -> postService.updatePost(testPostId, postRequestDtoForUpdate))
+    assertThatThrownBy(() -> postService.deletePost(testPostId))
         .isInstanceOf(ResourceNotFoundException.class);
   }
 
