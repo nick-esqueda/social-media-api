@@ -1,4 +1,4 @@
-package com.nickesqueda.socialmediademo.config;
+package com.nickesqueda.socialmediademo.test.config;
 
 import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;

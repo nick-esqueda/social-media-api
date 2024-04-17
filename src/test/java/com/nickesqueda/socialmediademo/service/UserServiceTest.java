@@ -1,10 +1,10 @@
 package com.nickesqueda.socialmediademo.service;
 
+import static com.nickesqueda.socialmediademo.test.util.TestConstants.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.nickesqueda.socialmediademo.config.ServiceLayerTestContextConfig;
 import com.nickesqueda.socialmediademo.dto.UserRequestDto;
 import com.nickesqueda.socialmediademo.dto.UserResponseDto;
 import com.nickesqueda.socialmediademo.entity.UserEntity;
@@ -12,6 +12,7 @@ import com.nickesqueda.socialmediademo.exception.ResourceNotFoundException;
 import com.nickesqueda.socialmediademo.exception.UnauthorizedOperationException;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import com.nickesqueda.socialmediademo.test.config.ServiceLayerTestContextConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +31,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Import({ServiceLayerTestContextConfig.class, ValidationAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 class UserServiceTest {
-
-  private static final String TEST_STRING = "TEST";
 
   @Autowired private UserService userService;
   @Autowired private UserRepository userRepository;

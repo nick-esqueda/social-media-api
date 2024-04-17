@@ -1,10 +1,10 @@
 package com.nickesqueda.socialmediademo.service;
 
+import static com.nickesqueda.socialmediademo.test.util.TestConstants.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.nickesqueda.socialmediademo.config.ServiceLayerTestContextConfig;
 import com.nickesqueda.socialmediademo.dto.CommentRequestDto;
 import com.nickesqueda.socialmediademo.dto.CommentResponseDto;
 import com.nickesqueda.socialmediademo.entity.Comment;
@@ -16,6 +16,7 @@ import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import com.nickesqueda.socialmediademo.repository.PostRepository;
 import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
+import com.nickesqueda.socialmediademo.test.config.ServiceLayerTestContextConfig;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,9 +35,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Import({ServiceLayerTestContextConfig.class, ValidationAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 class CommentServiceTest {
-
-  private static final String TEST_STRING = "TEST";
-  private static final String TEST_STRING2 = "TEST2";
 
   @Autowired private CommentService commentService;
   @Autowired private CommentRepository commentRepository;
