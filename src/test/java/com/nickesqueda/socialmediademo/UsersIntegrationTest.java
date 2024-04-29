@@ -6,15 +6,34 @@ import static org.assertj.core.api.Assertions.*;
 import com.nickesqueda.socialmediademo.dto.UserRequestDto;
 import com.nickesqueda.socialmediademo.dto.UserResponseDto;
 import com.nickesqueda.socialmediademo.exception.ErrorResponse;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.*;
 
 public class UsersIntegrationTest extends BaseIntegrationTest {
+  // TODO: reset user1 DB record to original state after each PUT test.
+
+  private final UserRequestDto updateUserRequestBody =
+      UserRequestDto.builder()
+          .username("user1")
+          .firstName(TEST_STRING)
+          .lastName(TEST_STRING)
+          .build();
+  private final UserRequestDto updateUserBadRequestBody =
+      UserRequestDto.builder()
+          .username(null)
+          .firstName("")
+          .lastName("")
+          .email("not an email")
+          .phoneNumber("not a phone number")
+          .birthday(LocalDate.MAX)
+          .bio("")
+          .build();
 
   @Test
   void getUser_ShouldReturnSuccessfulResponse_GivenValidId() {
     ResponseEntity<UserResponseDto> response =
-        restTemplate.getForEntity(testUserUrl, UserResponseDto.class);
+        restTemplate.getForEntity(user1Url, UserResponseDto.class);
 
     assertSuccessfulResponseGetUser(response);
   }
@@ -22,10 +41,10 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   void getUser_ShouldReturnSuccessfulResponse_WithAndWithoutAuthentication() {
     ResponseEntity<UserResponseDto> unauthenticatedResponse =
-        restTemplate.getForEntity(testUserUrl, UserResponseDto.class);
+        restTemplate.getForEntity(user1Url, UserResponseDto.class);
 
     RequestEntity<Void> authenticatedRequestEntity =
-        createAuthenticatedRequest(testUserUrl, null, HttpMethod.GET);
+        createAuthenticatedRequest("user1", user1Url, null, HttpMethod.GET);
     ResponseEntity<UserResponseDto> authenticatedResponse =
         restTemplate.exchange(authenticatedRequestEntity, UserResponseDto.class);
 
@@ -35,24 +54,19 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void getUser_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() {
-    ResponseEntity<ErrorResponse> response =
+    ResponseEntity<ErrorResponse> responseEntity =
         restTemplate.getForEntity(nonExistentUserUrl, ErrorResponse.class);
+    ErrorResponse responseBody = responseEntity.getBody();
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody()).hasFieldOrProperty(ERROR_MESSAGE_PROPERTY_NAME);
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(responseBody).isNotNull();
+    assertThat(responseBody.errorMessage()).isNotNull();
   }
 
   @Test
   void updateUser_ShouldReturnSuccessfulResponse_GivenValidValues() {
-    UserRequestDto requestBody =
-        UserRequestDto.builder()
-            .username("user1")
-            .firstName(TEST_STRING)
-            .lastName(TEST_STRING)
-            .build();
     RequestEntity<UserRequestDto> requestEntity =
-        createAuthenticatedRequest(testUserUrl, requestBody, HttpMethod.PUT);
+        createAuthenticatedRequest("user1", user1Url, updateUserRequestBody, HttpMethod.PUT);
 
     ResponseEntity<UserResponseDto> responseEntity =
         restTemplate.exchange(requestEntity, UserResponseDto.class);
@@ -61,19 +75,55 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(responseBody).isNotNull();
     assertThat(responseBody.getId()).isEqualTo(1);
-    assertThat(responseBody.getUsername()).isEqualTo("user1");
-    assertThat(responseBody.getFirstName()).isEqualTo(TEST_STRING);
-    assertThat(responseBody.getLastName()).isEqualTo(TEST_STRING);
+    assertThat(responseBody.getUsername()).isEqualTo(updateUserRequestBody.getUsername());
+    assertThat(responseBody.getFirstName()).isEqualTo(updateUserRequestBody.getFirstName());
+    assertThat(responseBody.getLastName()).isEqualTo(updateUserRequestBody.getLastName());
   }
 
   @Test
-  void updateUser_ShouldReturn400_GivenBadRequest() {}
+  void updateUser_ShouldReturn400WithErrorResponse_GivenBadRequest() {
+    RequestEntity<UserRequestDto> requestEntity =
+        createAuthenticatedRequest("user1", user1Url, updateUserBadRequestBody, HttpMethod.PUT);
+
+    ResponseEntity<ErrorResponse> responseEntity =
+        restTemplate.exchange(requestEntity, ErrorResponse.class);
+    ErrorResponse responseBody = responseEntity.getBody();
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(responseBody).isNotNull();
+    assertThat(responseBody.errorMessage()).isNotNull();
+    assertThat(responseBody.errorDetails().size()).isEqualTo(7);
+  }
 
   @Test
-  void updateUser_ShouldReturn401_GivenUnauthorizedUser() {}
+  void updateUser_ShouldReturn401WithErrorResponse_GivenNoAuthorization() {
+    // do not send Authorization header.
+    RequestEntity<UserRequestDto> requestEntity =
+        new RequestEntity<>(updateUserRequestBody, HttpMethod.PUT, user1Url);
+
+    ResponseEntity<ErrorResponse> responseEntity =
+        restTemplate.exchange(requestEntity, ErrorResponse.class);
+    ErrorResponse responseBody = responseEntity.getBody();
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertThat(responseBody).isNotNull();
+    assertThat(responseBody.errorMessage()).isNotNull();
+  }
 
   @Test
-  void updateUser_ShouldReturn404_GivenUserNotFound() {}
+  void updateUser_ShouldReturn401WithErrorResponse_GivenUnauthorizedUser() {
+    // send PUT request to user2 but with user1's authorization.
+    RequestEntity<UserRequestDto> requestEntity =
+        createAuthenticatedRequest("user1", user2Url, updateUserRequestBody, HttpMethod.PUT);
+
+    ResponseEntity<ErrorResponse> responseEntity =
+        restTemplate.exchange(requestEntity, ErrorResponse.class);
+    ErrorResponse responseBody = responseEntity.getBody();
+
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertThat(responseBody).isNotNull();
+    assertThat(responseBody.errorMessage()).isNotNull();
+  }
 
   private void assertSuccessfulResponseGetUser(ResponseEntity<UserResponseDto> responseEntity) {
     UserResponseDto responseBody = responseEntity.getBody();

@@ -3,7 +3,6 @@ package com.nickesqueda.socialmediademo;
 import com.nickesqueda.socialmediademo.dto.AuthCredentialsDto;
 import com.nickesqueda.socialmediademo.dto.LoginResponseDto;
 import java.net.URI;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,8 @@ public abstract class BaseIntegrationTest {
   @LocalServerPort private int port;
   URI baseUri;
   URI loginUrl;
-  URI testUserUrl;
+  URI user1Url;
+  URI user2Url;
   URI nonExistentUserUrl;
 
   static {
@@ -50,23 +50,26 @@ public abstract class BaseIntegrationTest {
             .build()
             .toUri();
     loginUrl = UriComponentsBuilder.fromUri(baseUri).path("/auth/login").build().toUri();
-    testUserUrl =
+    user1Url =
         UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}").buildAndExpand(1).toUri();
+    user2Url =
+        UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}").buildAndExpand(2).toUri();
     nonExistentUserUrl =
         UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}").buildAndExpand(1000).toUri();
   }
 
-  String getAuthToken() {
+  String getAuthToken(String username) {
     AuthCredentialsDto authCredentialsDto =
-        AuthCredentialsDto.builder().username("user1").password("password").build();
+        AuthCredentialsDto.builder().username(username).password("password").build();
     LoginResponseDto loginResponseDto =
         restTemplate.postForObject(loginUrl, authCredentialsDto, LoginResponseDto.class);
     return loginResponseDto.getAuthToken();
   }
 
-  <T> RequestEntity<T> createAuthenticatedRequest(URI url, T body, HttpMethod httpMethod) {
+  <T> RequestEntity<T> createAuthenticatedRequest(
+      String username, URI url, T body, HttpMethod httpMethod) {
     HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(getAuthToken());
+    headers.setBearerAuth(getAuthToken(username));
     return new RequestEntity<>(body, headers, httpMethod, url);
   }
 }
