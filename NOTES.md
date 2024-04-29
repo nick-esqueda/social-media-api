@@ -38,6 +38,6 @@ DTOs allow you to decouple your API contract from your database schema, providin
 
 docker network create network-test1 (run once)
 
-docker run --name mysql-test2 --network=network-test1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=social_media_starter_user -e MYSQL_PASSWORD=password -e MYSQL_DATABASE=social_media_starter -d mysql
+docker run --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password1234 -e MYSQL_USER=social_media_demo_user -e MYSQL_PASSWORD=password5678 -e MYSQL_DATABASE=social_media_demo -d mysql
 
 docker run --name social-media-demo-test3 --network=network-test1 -p 8080:8080 -d social-media-starter:test3

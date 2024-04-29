@@ -153,6 +153,8 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 
 - Swagger API Documentation
 
+- Database migration tool
+
 # Tech Design Notes
 
 - JPA vs. JDBC? maybe fork this repo and create a version with JDBC.
