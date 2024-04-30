@@ -41,3 +41,15 @@ docker network create network-test1 (run once)
 docker run --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password1234 -e MYSQL_USER=social_media_demo_user -e MYSQL_PASSWORD=password5678 -e MYSQL_DATABASE=social_media_demo -d mysql
 
 docker run --name social-media-demo-test3 --network=network-test1 -p 8080:8080 -d social-media-starter:test3
+
+## Integration test: @Transactional not working
+
+@Transactional on the test method do not control the transactions on the server.
+this is because the test method and server are running on different threads.
+this means those transactions will not rollback.
+
+FIX:
+used @AutoConfigureMockMvc to mimic HTTP requests to controller. this means server won't start.
+replace restTemplate usage with mockMvc.
+configure Spring Security Test and adjust test methods.
+@Transactional should work now, since tests and transactions are on same thread.
