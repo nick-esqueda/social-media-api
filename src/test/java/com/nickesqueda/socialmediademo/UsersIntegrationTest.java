@@ -9,10 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.jayway.jsonpath.JsonPath;
-import com.nickesqueda.socialmediademo.dto.PostRequestDto;
-import com.nickesqueda.socialmediademo.dto.UserRequestDto;
 import java.time.Instant;
-import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -20,25 +17,40 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class UsersIntegrationTest extends BaseIntegrationTest {
 
-  private final UserRequestDto updateUserRequest =
-      UserRequestDto.builder()
-          .username("user1")
-          .firstName(TEST_STRING)
-          .lastName(TEST_STRING)
-          .build();
-  private final UserRequestDto updateUserBadRequest =
-      UserRequestDto.builder()
-          .username(null)
-          .firstName("")
-          .lastName("")
-          .email("not an email")
-          .phoneNumber("not a phone number")
-          .birthday(LocalDate.MAX)
-          .bio("")
-          .build();
-  private final PostRequestDto createPostRequest =
-      PostRequestDto.builder().content(TEST_STRING).build();
-  private final PostRequestDto createPostBadRequest = PostRequestDto.builder().content("").build();
+  private final String updateUserRequest =
+      """
+      {
+        "username": "user1",
+        "firstName": "%s",
+        "lastName": "%s"
+      }"""
+          .formatted(TEST_STRING, TEST_STRING);
+
+  private final String updateUserBadRequestJson =
+      """
+      {
+        "username": "!",
+        "firstName": "",
+        "lastName": "",
+        "email": "not an email",
+        "phoneNumber": "not a phone number",
+        "birthday": "9999-12-31",
+        "gender": null,
+        "bio": ""
+      }""";
+
+  private final String createPostRequestJson =
+      """
+      {
+        "content": "%s"
+      }"""
+          .formatted(TEST_STRING);
+
+  private final String createPostBadRequestJson =
+      """
+      {
+        "content": ""
+      }""";
 
   @Test
   void getUser_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
@@ -68,13 +80,13 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserRequest)))
+                .content(updateUserRequest))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
-        .andExpect(jsonPath("$.username").value(updateUserRequest.getUsername()))
-        .andExpect(jsonPath("$.firstName").value(updateUserRequest.getFirstName()))
-        .andExpect(jsonPath("$.lastName").value(updateUserRequest.getLastName()))
+        .andExpect(jsonPath("$.username").value("user1"))
+        .andExpect(jsonPath("$.firstName").value(TEST_STRING))
+        .andExpect(jsonPath("$.lastName").value(TEST_STRING))
         .andReturn();
 
     // "updatedAt" will not be updated in the PUT response, since this is a @Transactional test.
@@ -98,17 +110,31 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
-  void updateUser_ShouldReturn400WithErrorResponse_GivenBadRequest() throws Exception {
+  void updateUser_ShouldReturn400WithErrorResponse_GivenInvalidData() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserBadRequest)))
+                .content(updateUserBadRequestJson))
         .andDo(print())
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.errorMessage").isNotEmpty())
-        .andExpect(jsonPath("$.errorDetails").isNotEmpty());
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void updateUser_ShouldReturnEachValidationError_GivenInvalidData() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            put(userUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateUserBadRequestJson))
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errorDetails", hasSize(8)));
   }
 
   @Test
@@ -120,7 +146,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserRequest)))
+                .content(updateUserRequest))
         .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -135,7 +161,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(nonExistentUserId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserRequest)))
+                .content(updateUserRequest))
         .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -168,10 +194,10 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createPostRequest)))
+                .content(createPostRequestJson))
         .andDo(print())
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.content").value(createPostRequest.getContent()));
+        .andExpect(jsonPath("$.content").value(TEST_STRING));
   }
 
   @Test
@@ -183,7 +209,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createPostRequest)))
+                .content(createPostRequestJson))
         .andExpect(status().isCreated());
 
     mockMvc
@@ -196,16 +222,31 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
-  void createPost_ShouldReturn400WithErrorResponse_GivenBadRequest() throws Exception {
+  void createPost_ShouldReturn400WithErrorResponse_GivenInvalidData() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
         .perform(
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createPostBadRequest)))
+                .content(createPostBadRequestJson))
         .andDo(print())
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturnEachValidationError_GivenInvalidData() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostBadRequestJson))
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errorDetails", hasSize(1)));
   }
 
   @Test
@@ -217,7 +258,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createPostRequest)))
+                .content(createPostRequestJson))
         .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -232,7 +273,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             post(usersPostsUriBuilder.buildAndExpand(nonExistentUserId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createPostRequest)))
+                .content(createPostRequestJson))
         .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());

@@ -1,5 +1,7 @@
 # TODOs
 
+TODO: regex validation for firstName & lastName
+
 TODO: return 204 No Content when returning empty list for getUsersPosts/Comments?
 
 TODO: postman positive tests: verify created Entity is returned when requesting for all parent's records.
