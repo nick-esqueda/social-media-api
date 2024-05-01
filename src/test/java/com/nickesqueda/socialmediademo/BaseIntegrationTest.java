@@ -26,6 +26,7 @@ public abstract class BaseIntegrationTest {
   static ObjectMapper objectMapper;
   static URI baseUri;
   static UriComponentsBuilder userUriBuilder;
+  static UriComponentsBuilder usersPostsUriBuilder;
   static Long userId;
   static Long nonExistentUserId;
   static Long unauthorizedUserId;
@@ -48,6 +49,7 @@ public abstract class BaseIntegrationTest {
     objectMapper = JsonMapper.builder().findAndAddModules().build();
     baseUri = UriComponentsBuilder.newInstance().path("/api/v1").build().toUri();
     userUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}");
+    usersPostsUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/posts");
 
     userId = 1L;
     nonExistentUserId = 1000000L;

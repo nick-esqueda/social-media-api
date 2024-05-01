@@ -1,6 +1,7 @@
 package com.nickesqueda.socialmediademo;
 
 import static com.nickesqueda.socialmediademo.test.util.TestConstants.*;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -97,6 +98,27 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
                 .content(objectMapper.writeValueAsString(updateUserRequestBody)))
         .andDo(print())
         .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  void getUsersPosts_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
+  }
+
+  @Test
+  void getUsersPosts_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
+    mockMvc
+        .perform(
+            get(userUriBuilder.buildAndExpand(nonExistentUserId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateUserRequestBody)))
+        .andDo(print())
+        .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
 }
