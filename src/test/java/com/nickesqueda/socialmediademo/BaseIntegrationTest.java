@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,10 +25,10 @@ public abstract class BaseIntegrationTest {
   @MockBean AuthUtils authUtils;
   static ObjectMapper objectMapper;
   static URI baseUri;
-  static URI loginUrl;
-  static URI user1Url;
-  static URI user2Url;
-  static URI nonExistentUserUrl;
+  static UriComponentsBuilder userUriBuilder;
+  static Long userId;
+  static Long nonExistentUserId;
+  static Long unauthorizedUserId;
 
   static {
     mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:5.7.34")).withReuse(true);
@@ -48,12 +47,10 @@ public abstract class BaseIntegrationTest {
     // use .findAndAddModules() to enable java.time.Instant serialization.
     objectMapper = JsonMapper.builder().findAndAddModules().build();
     baseUri = UriComponentsBuilder.newInstance().path("/api/v1").build().toUri();
-    loginUrl = UriComponentsBuilder.fromUri(baseUri).path("/auth/login").build().toUri();
-    user1Url =
-        UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}").buildAndExpand(1).toUri();
-    user2Url =
-        UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}").buildAndExpand(2).toUri();
-    nonExistentUserUrl =
-        UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}").buildAndExpand(1000).toUri();
+    userUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}");
+
+    userId = 1L;
+    nonExistentUserId = 1000000L;
+    unauthorizedUserId = 2L;
   }
 }

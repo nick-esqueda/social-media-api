@@ -35,7 +35,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   void getUser_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
     mockMvc
-        .perform(get(user1Url))
+        .perform(get(userUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1))
@@ -45,7 +45,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   void getUser_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
     mockMvc
-        .perform(get(nonExistentUserUrl))
+        .perform(get(userUriBuilder.buildAndExpand(nonExistentUserId).toUri()))
         .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -55,10 +55,10 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @WithMockUser
   @Transactional
   void updateUser_ShouldReturnSuccessfulResponse_GivenValidValues() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(1L);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
         .perform(
-            put(user1Url)
+            put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateUserRequestBody)))
         .andDo(print())
@@ -73,10 +73,10 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @WithMockUser
   @Transactional
   void updateUser_ShouldReturn400WithErrorResponse_GivenBadRequest() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(1L);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
         .perform(
-            put(user1Url)
+            put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateUserBadRequestBody)))
         .andDo(print())
@@ -89,10 +89,10 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @WithMockUser
   @Transactional
   void updateUser_ShouldReturn401WithErrorResponse_GivenUnauthorizedUser() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(2L);
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
     mockMvc
         .perform(
-            put(user1Url)
+            put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateUserRequestBody)))
         .andDo(print())
