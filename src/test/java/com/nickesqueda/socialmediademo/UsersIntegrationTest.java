@@ -175,6 +175,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createPostRequest)))
+        .andDo(print())
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.content").value(createPostRequest.getContent()));
   }
@@ -208,6 +209,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createPostBadRequest)))
+        .andDo(print())
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
@@ -222,6 +224,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createPostRequest)))
+        .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
@@ -236,6 +239,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
             post(usersPostsUriBuilder.buildAndExpand(nonExistentUserId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createPostRequest)))
+        .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
@@ -247,6 +251,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
         .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
         .andExpect(status().isNoContent());
   }
 
@@ -261,10 +266,12 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
 
     mockMvc
         .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
         .andExpect(status().isNoContent());
 
     mockMvc
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
         .andExpect(jsonPath("$", hasSize(0)));
   }
 
@@ -275,6 +282,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
     mockMvc
         .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
         .andExpect(status().isForbidden());
   }
 
@@ -285,6 +293,26 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
         .perform(delete(usersPostsUriBuilder.buildAndExpand(nonExistentUserId).toUri()))
-        .andExpect(status().isNotFound());
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  void getUsersComments_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
+    mockMvc
+        .perform(get(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
+  }
+
+  @Test
+  void getUsersComments_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
+    mockMvc
+        .perform(get(usersCommentsUriBuilder.buildAndExpand(nonExistentUserId).toUri()))
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
 }

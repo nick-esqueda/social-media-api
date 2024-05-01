@@ -30,6 +30,7 @@ public abstract class BaseIntegrationTest {
   static URI baseUri;
   static UriComponentsBuilder userUriBuilder;
   static UriComponentsBuilder usersPostsUriBuilder;
+  static UriComponentsBuilder usersCommentsUriBuilder;
   static Long userId;
   static Long nonExistentUserId;
   static Long unauthorizedUserId;
@@ -39,13 +40,6 @@ public abstract class BaseIntegrationTest {
     mySQLContainer.start();
   }
 
-  @DynamicPropertySource
-  static void configureProperties(DynamicPropertyRegistry dynamicPropertyRegistry) {
-    dynamicPropertyRegistry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
-    dynamicPropertyRegistry.add("spring.datasource.username", mySQLContainer::getUsername);
-    dynamicPropertyRegistry.add("spring.datasource.password", mySQLContainer::getPassword);
-  }
-
   @BeforeAll
   static void setUp() {
     // use .findAndAddModules() to enable java.time.Instant serialization.
@@ -53,9 +47,18 @@ public abstract class BaseIntegrationTest {
     baseUri = UriComponentsBuilder.newInstance().path("/api/v1").build().toUri();
     userUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}");
     usersPostsUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/posts");
+    usersCommentsUriBuilder =
+        UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/comments");
 
     userId = 1L;
     nonExistentUserId = 1000000L;
     unauthorizedUserId = 2L;
+  }
+
+  @DynamicPropertySource
+  static void configureProperties(DynamicPropertyRegistry dynamicPropertyRegistry) {
+    dynamicPropertyRegistry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
+    dynamicPropertyRegistry.add("spring.datasource.username", mySQLContainer::getUsername);
+    dynamicPropertyRegistry.add("spring.datasource.password", mySQLContainer::getPassword);
   }
 }
