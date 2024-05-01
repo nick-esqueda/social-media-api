@@ -3,7 +3,6 @@ package com.nickesqueda.socialmediademo;
 import static com.nickesqueda.socialmediademo.test.util.TestConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -12,16 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.jayway.jsonpath.JsonPath;
 import com.nickesqueda.socialmediademo.dto.PostRequestDto;
 import com.nickesqueda.socialmediademo.dto.UserRequestDto;
-
 import java.time.Instant;
 import java.time.LocalDate;
-
-import jakarta.persistence.FlushModeType;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.GreaterThan;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UsersIntegrationTest extends BaseIntegrationTest {
