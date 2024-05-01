@@ -36,8 +36,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
           .build();
   private final PostRequestDto createPostRequest =
       PostRequestDto.builder().content(TEST_STRING).build();
-  private final PostRequestDto createPostBadRequest =
-      PostRequestDto.builder().content("").build();
+  private final PostRequestDto createPostBadRequest = PostRequestDto.builder().content("").build();
 
   @Test
   void getUser_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
@@ -95,7 +94,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
-  void updateUser_ShouldReturn401WithErrorResponse_GivenUnauthorizedUser() throws Exception {
+  void updateUser_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
     mockMvc
         .perform(
@@ -103,7 +102,22 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateUserRequest)))
         .andDo(print())
-        .andExpect(status().isUnauthorized())
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void updateUser_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+    mockMvc
+        .perform(
+            put(userUriBuilder.buildAndExpand(nonExistentUserId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateUserRequest)))
+        .andDo(print())
+        .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
 
@@ -156,14 +170,28 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
-  void createPost_ShouldReturn401_GivenUnauthorizedUser() throws Exception {
+  void createPost_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
     mockMvc
         .perform(
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createPostRequest)))
-        .andExpect(status().isUnauthorized())
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(nonExistentUserId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createPostRequest)))
+        .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
 }
