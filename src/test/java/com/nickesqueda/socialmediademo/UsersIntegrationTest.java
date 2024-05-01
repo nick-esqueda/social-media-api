@@ -309,4 +309,65 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersComments_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersComments_ShouldBeReflectedByGetUsersComments_GivenSuccessfulDelete()
+      throws Exception {
+
+    mockMvc
+        .perform(get(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+
+    mockMvc
+        .perform(delete(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isNoContent());
+
+    mockMvc
+        .perform(get(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersComments_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser()
+      throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+    mockMvc
+        .perform(delete(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersComments_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist()
+      throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(usersCommentsUriBuilder.buildAndExpand(nonExistentUserId).toUri()))
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
 }
