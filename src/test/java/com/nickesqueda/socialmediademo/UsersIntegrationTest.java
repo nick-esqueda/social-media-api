@@ -80,7 +80,25 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .andExpect(jsonPath("$.id").value(userId))
         .andExpect(jsonPath("$.username").value(updateUserRequest.getUsername()))
         .andExpect(jsonPath("$.firstName").value(updateUserRequest.getFirstName()))
-        .andExpect(jsonPath("$.lastName").value(updateUserRequest.getLastName()));
+        .andExpect(jsonPath("$.lastName").value(updateUserRequest.getLastName()))
+        .andReturn();
+
+    // "updatedAt" will not be updated in the PUT response, since this is a @Transactional test.
+    // must validate updatedAt separately, as it gets updated only after the transaction
+    // is committed (after test method end) or *changes are flushed*
+    entityManager.flush();
+
+    String resultString =
+        mockMvc
+            .perform(get(userUriBuilder.buildAndExpand(userId).toUri()))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    Instant createdAt = Instant.parse(JsonPath.read(resultString, "$.createdAt"));
+    Instant updatedAt = Instant.parse(JsonPath.read(resultString, "$.updatedAt"));
+
+    assertThat(updatedAt).isAfter(createdAt);
   }
 
   @Test
