@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import java.net.URI;
+
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +24,7 @@ public abstract class BaseIntegrationTest {
 
   static final MySQLContainer<?> mySQLContainer;
   @Autowired MockMvc mockMvc;
+  @Autowired EntityManager entityManager;
   @MockBean AuthUtils authUtils;
   static ObjectMapper objectMapper;
   static URI baseUri;

@@ -1,6 +1,7 @@
 package com.nickesqueda.socialmediademo;
 
 import static com.nickesqueda.socialmediademo.test.util.TestConstants.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
@@ -8,12 +9,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.jayway.jsonpath.JsonPath;
 import com.nickesqueda.socialmediademo.dto.PostRequestDto;
 import com.nickesqueda.socialmediademo.dto.UserRequestDto;
+
+import java.time.Instant;
 import java.time.LocalDate;
+
+import jakarta.persistence.FlushModeType;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.matchers.GreaterThan;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UsersIntegrationTest extends BaseIntegrationTest {
@@ -44,7 +52,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(get(userUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.id").value(userId))
         .andExpect(jsonPath("$.username").value("user1"));
   }
 
@@ -69,7 +77,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
                 .content(objectMapper.writeValueAsString(updateUserRequest)))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.id").value(userId))
         .andExpect(jsonPath("$.username").value(updateUserRequest.getUsername()))
         .andExpect(jsonPath("$.firstName").value(updateUserRequest.getFirstName()))
         .andExpect(jsonPath("$.lastName").value(updateUserRequest.getLastName()));
@@ -156,6 +164,25 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
+  void createPost_ShouldBeReflectedByGetUsersPosts_GivenSuccessfulCreate() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createPostRequest)))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)));
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
   void createPost_ShouldReturn400WithErrorResponse_GivenBadRequest() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
@@ -193,5 +220,53 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
                 .content(objectMapper.writeValueAsString(createPostRequest)))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersPosts_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersPosts_ShouldBeReflectedByGetUsersPosts_GivenSuccessfulDelete() throws Exception {
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andExpect(jsonPath("$", hasSize(1)));
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+
+    mockMvc
+        .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andExpect(status().isNoContent());
+
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersPosts_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+    mockMvc
+        .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersPosts_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(usersPostsUriBuilder.buildAndExpand(nonExistentUserId).toUri()))
+        .andExpect(status().isNotFound());
   }
 }

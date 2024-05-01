@@ -42,14 +42,16 @@ docker run --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password1234 -e
 
 docker run --name social-media-demo-test3 --network=network-test1 -p 8080:8080 -d social-media-starter:test3
 
-## Integration test: @Transactional not working
+## Decision to use MockMvc for integration tests instead of TestRestTemplate
 
+Using MockMvc tests means a test server doesn't start up, which means faster test execution.
+The only downside is the servlet layer is bypassed. This should be tested with external functional tests, however.
+Can handle the auth/Spring Security layer easier. Don't need to make /auth/login calls for each test method.
+
+@Transactional doesn't working when server starts up:
 @Transactional on the test method do not control the transactions on the server.
 this is because the test method and server are running on different threads.
 this means those transactions will not rollback.
 
-FIX:
-used @AutoConfigureMockMvc to mimic HTTP requests to controller. this means server won't start.
-replace restTemplate usage with mockMvc.
-configure Spring Security Test and adjust test methods.
-@Transactional should work now, since tests and transactions are on same thread.
+@Transactional is needed in order to have a fresh DB state for each test method.
+It manages each test method as a transaction, and rolls back the DB changes once the test is done.
