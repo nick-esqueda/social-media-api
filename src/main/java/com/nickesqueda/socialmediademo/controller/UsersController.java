@@ -37,11 +37,6 @@ public class UsersController {
     return postService.getUsersPosts(userId);
   }
 
-  @GetMapping("/{userId}/comments")
-  public List<CommentResponseDto> getUsersComments(@PathVariable("userId") Long userId) {
-    return commentService.getUsersComments(userId);
-  }
-
   @PostMapping("/{userId}/posts")
   @ResponseStatus(CREATED)
   public PostResponseDto createPost(
@@ -53,6 +48,11 @@ public class UsersController {
   @ResponseStatus(NO_CONTENT)
   public void deleteUsersPosts(@PathVariable("userId") Long userId) {
     postService.deleteUsersPosts(userId);
+  }
+
+  @GetMapping("/{userId}/comments")
+  public List<CommentResponseDto> getUsersComments(@PathVariable("userId") Long userId) {
+    return commentService.getUsersComments(userId);
   }
 
   @DeleteMapping("/{userId}/comments")

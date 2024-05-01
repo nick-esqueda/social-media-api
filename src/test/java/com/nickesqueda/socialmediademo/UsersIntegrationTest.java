@@ -2,11 +2,13 @@ package com.nickesqueda.socialmediademo;
 
 import static com.nickesqueda.socialmediademo.test.util.TestConstants.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.nickesqueda.socialmediademo.dto.PostRequestDto;
 import com.nickesqueda.socialmediademo.dto.UserRequestDto;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -16,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class UsersIntegrationTest extends BaseIntegrationTest {
 
-  private final UserRequestDto updateUserRequestBody =
+  private final UserRequestDto updateUserRequest =
       UserRequestDto.builder()
           .username("user1")
           .firstName(TEST_STRING)
           .lastName(TEST_STRING)
           .build();
-  private final UserRequestDto updateUserBadRequestBody =
+  private final UserRequestDto updateUserBadRequest =
       UserRequestDto.builder()
           .username(null)
           .firstName("")
@@ -32,6 +34,10 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
           .birthday(LocalDate.MAX)
           .bio("")
           .build();
+  private final PostRequestDto createPostRequest =
+      PostRequestDto.builder().content(TEST_STRING).build();
+  private final PostRequestDto createPostBadRequest =
+      PostRequestDto.builder().content("").build();
 
   @Test
   void getUser_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
@@ -61,13 +67,13 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserRequestBody)))
+                .content(objectMapper.writeValueAsString(updateUserRequest)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.username").value(updateUserRequestBody.getUsername()))
-        .andExpect(jsonPath("$.firstName").value(updateUserRequestBody.getFirstName()))
-        .andExpect(jsonPath("$.lastName").value(updateUserRequestBody.getLastName()));
+        .andExpect(jsonPath("$.username").value(updateUserRequest.getUsername()))
+        .andExpect(jsonPath("$.firstName").value(updateUserRequest.getFirstName()))
+        .andExpect(jsonPath("$.lastName").value(updateUserRequest.getLastName()));
   }
 
   @Test
@@ -79,7 +85,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserBadRequestBody)))
+                .content(objectMapper.writeValueAsString(updateUserBadRequest)))
         .andDo(print())
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty())
@@ -95,7 +101,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserRequestBody)))
+                .content(objectMapper.writeValueAsString(updateUserRequest)))
         .andDo(print())
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -113,12 +119,51 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   @Test
   void getUsersPosts_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
     mockMvc
-        .perform(
-            get(userUriBuilder.buildAndExpand(nonExistentUserId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateUserRequestBody)))
+        .perform(get(userUriBuilder.buildAndExpand(nonExistentUserId).toUri()))
         .andDo(print())
         .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturnSuccessfulResponse_GivenValidValues() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createPostRequest)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.content").value(createPostRequest.getContent()));
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturn400WithErrorResponse_GivenBadRequest() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createPostBadRequest)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturn401_GivenUnauthorizedUser() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createPostRequest)))
+        .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
   }
 }
