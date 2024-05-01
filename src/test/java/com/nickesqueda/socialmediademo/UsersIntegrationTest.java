@@ -20,11 +20,11 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
   private final String updateUserRequest =
       """
       {
-        "username": "user1",
+        "username": "%s",
         "firstName": "%s",
         "lastName": "%s"
       }"""
-          .formatted(TEST_STRING, TEST_STRING);
+          .formatted(TEST_USERNAME, TEST_STRING, TEST_STRING);
 
   private final String updateUserBadRequestJson =
       """
@@ -59,7 +59,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
-        .andExpect(jsonPath("$.username").value("user1"));
+        .andExpect(jsonPath("$.username").value(TEST_USERNAME));
   }
 
   @Test
@@ -84,7 +84,7 @@ public class UsersIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
-        .andExpect(jsonPath("$.username").value("user1"))
+        .andExpect(jsonPath("$.username").value(TEST_USERNAME))
         .andExpect(jsonPath("$.firstName").value(TEST_STRING))
         .andExpect(jsonPath("$.lastName").value(TEST_STRING))
         .andReturn();
