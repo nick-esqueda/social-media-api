@@ -1,4 +1,4 @@
-package com.nickesqueda.socialmediademo;
+package com.nickesqueda.socialmediademo.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;

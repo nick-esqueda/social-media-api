@@ -1,4 +1,4 @@
-package com.nickesqueda.socialmediademo;
+package com.nickesqueda.socialmediademo.integration;
 
 import static com.nickesqueda.socialmediademo.test.util.TestConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +15,7 @@ import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
-public class UsersIntegrationTest extends BaseIntegrationTest {
+public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
   private final String updateUserRequest =
       """
