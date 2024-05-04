@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class PostsControllerIntegrationTest extends BaseIntegrationTest {
 
-  private final String updatePostRequest =
+  private final String updatePostRequestJson =
       """
       {
           "content": "%s"
@@ -71,7 +71,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(postUriBuilder.buildAndExpand(postId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(updatePostRequest))
+                .content(updatePostRequestJson))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(postId))
@@ -125,6 +125,19 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void updatePost_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    mockMvc
+        .perform(
+            put(postUriBuilder.buildAndExpand(postId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePostRequestJson))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
   @WithMockUser
   @Transactional
   void updatePost_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser() throws Exception {
@@ -133,7 +146,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(postUriBuilder.buildAndExpand(postId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(updatePostRequest))
+                .content(updatePostRequestJson))
         .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -147,7 +160,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(postUriBuilder.buildAndExpand(nonExistentPostId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(updatePostRequest))
+                .content(updatePostRequestJson))
         .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -223,6 +236,19 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void createComment_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(postsCommentsUriBuilder.buildAndExpand(postId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createCommentRequestJson))
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
   @WithMockUser
   @Transactional
   void createComment_ShouldReturn404WithErrorResponse_GivenPostDoesNotExist() throws Exception {
@@ -245,6 +271,17 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(delete(postUriBuilder.buildAndExpand(postId).toUri()))
         .andDo(print())
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void deletePost_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(postUriBuilder.buildAndExpand(postId).toUri()))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
   }
 
   @Test
@@ -305,6 +342,17 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void deletePostsComments_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
   }
 
   @Test

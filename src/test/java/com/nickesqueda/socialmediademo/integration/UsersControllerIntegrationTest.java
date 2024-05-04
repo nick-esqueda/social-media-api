@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
-  private final String updateUserRequest =
+  private final String updateUserRequestJson =
       """
       {
         "username": "%s",
@@ -80,7 +80,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(updateUserRequest))
+                .content(updateUserRequestJson))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
@@ -138,6 +138,20 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void updateUser_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+        put(userUriBuilder.buildAndExpand(userId).toUri())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(updateUserRequestJson))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
   @WithMockUser
   @Transactional
   void updateUser_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser() throws Exception {
@@ -146,7 +160,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(userId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(updateUserRequest))
+                .content(updateUserRequestJson))
         .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -161,7 +175,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .perform(
             put(userUriBuilder.buildAndExpand(nonExistentUserId).toUri())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(updateUserRequest))
+                .content(updateUserRequestJson))
         .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
@@ -256,6 +270,20 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void createPost_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostRequestJson))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
   @WithMockUser
   @Transactional
   void createPost_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser() throws Exception {
@@ -314,6 +342,17 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void deleteUsersPosts_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
   }
 
   @Test
@@ -390,6 +429,17 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void deleteUsersComments_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(delete(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
   }
 
   @Test
