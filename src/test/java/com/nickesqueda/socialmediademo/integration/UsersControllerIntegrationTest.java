@@ -22,41 +22,6 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
   @Autowired private UserRepository userRepository;
 
-  private final String updateUserRequestJson =
-      """
-      {
-        "username": "%s",
-        "firstName": "%s",
-        "lastName": "%s"
-      }"""
-          .formatted(TEST_USERNAME, TEST_STRING, TEST_STRING);
-
-  private final String updateUserBadRequestJson =
-      """
-      {
-        "username": "!",
-        "firstName": "",
-        "lastName": "",
-        "email": "not an email",
-        "phoneNumber": "not a phone number",
-        "birthday": "9999-12-31",
-        "gender": null,
-        "bio": ""
-      }""";
-
-  private final String createPostRequestJson =
-      """
-      {
-        "content": "%s"
-      }"""
-          .formatted(TEST_STRING);
-
-  private final String createPostBadRequestJson =
-      """
-      {
-        "content": ""
-      }""";
-
   @Test
   void getUser_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
     mockMvc

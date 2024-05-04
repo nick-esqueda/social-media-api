@@ -22,32 +22,6 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
 
   @Autowired private PostRepository postRepository;
 
-  private final String updatePostRequestJson =
-      """
-      {
-          "content": "%s"
-      }"""
-          .formatted(TEST_STRING2);
-
-  private final String updatePostBadRequestJson =
-      """
-      {
-          "content": ""
-      }""";
-
-  private final String createCommentRequestJson =
-      """
-      {
-          "content": "%s"
-      }"""
-          .formatted(TEST_STRING);
-
-  private final String createCommentBadRequestJson =
-      """
-      {
-          "content": ""
-      }""";
-
   @Test
   void getPost_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
     mockMvc
@@ -297,6 +271,29 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(delete(postUriBuilder.buildAndExpand(postId).toUri()))
         .andDo(print())
         .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deletePost_ShouldBeReflectedByGetUsersPosts_GivenSuccessfulDelete() throws Exception {
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+
+    mockMvc
+        .perform(delete(postUriBuilder.buildAndExpand(postId).toUri()))
+        .andDo(print())
+        .andExpect(status().isNoContent());
+
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(0)));
   }
 
   @Test

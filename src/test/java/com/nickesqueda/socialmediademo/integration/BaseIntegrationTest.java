@@ -1,17 +1,11 @@
 package com.nickesqueda.socialmediademo.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,18 +26,20 @@ public abstract class BaseIntegrationTest {
   @Autowired MockMvc mockMvc;
   @Autowired EntityManager entityManager;
   @MockBean AuthUtils authUtils;
-  static ObjectMapper objectMapper;
   static URI baseUri;
   static UriComponentsBuilder userUriBuilder;
   static UriComponentsBuilder usersPostsUriBuilder;
   static UriComponentsBuilder usersCommentsUriBuilder;
   static UriComponentsBuilder postUriBuilder;
   static UriComponentsBuilder postsCommentsUriBuilder;
+  static UriComponentsBuilder commentUriBuilder;
   static Long userId;
   static Long nonExistentUserId;
   static Long unauthorizedUserId;
   static Long postId;
   static Long nonExistentPostId;
+  static Long commentId;
+  static Long nonExistentCommentId;
 
   static {
     mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:5.7.34")).withReuse(true);
@@ -57,9 +53,9 @@ public abstract class BaseIntegrationTest {
     unauthorizedUserId = 2L;
     postId = 1L;
     nonExistentPostId = 1000000L;
+    commentId = 1L;
+    nonExistentCommentId = 1000000L;
 
-    // use .findAndAddModules() to enable java.time.Instant serialization.
-    objectMapper = JsonMapper.builder().findAndAddModules().build();
     baseUri = UriComponentsBuilder.newInstance().path("/api/v1").build().toUri();
     userUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}");
     usersPostsUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/posts");
@@ -68,6 +64,7 @@ public abstract class BaseIntegrationTest {
     postUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}");
     postsCommentsUriBuilder =
         UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}/comments");
+    commentUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/comments/{postId}");
   }
 
   @DynamicPropertySource
