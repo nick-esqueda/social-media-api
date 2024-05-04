@@ -30,9 +30,13 @@ public abstract class BaseIntegrationTest {
   static UriComponentsBuilder userUriBuilder;
   static UriComponentsBuilder usersPostsUriBuilder;
   static UriComponentsBuilder usersCommentsUriBuilder;
+  static UriComponentsBuilder postUriBuilder;
+  static UriComponentsBuilder postsCommentsUriBuilder;
   static Long userId;
   static Long nonExistentUserId;
   static Long unauthorizedUserId;
+  static Long postId;
+  static Long nonExistentPostId;
 
   static {
     mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:5.7.34")).withReuse(true);
@@ -41,6 +45,12 @@ public abstract class BaseIntegrationTest {
 
   @BeforeAll
   static void setUp() {
+    userId = 1L;
+    nonExistentUserId = 1000000L;
+    unauthorizedUserId = 2L;
+    postId = 1L;
+    nonExistentPostId = 1000000L;
+
     // use .findAndAddModules() to enable java.time.Instant serialization.
     objectMapper = JsonMapper.builder().findAndAddModules().build();
     baseUri = UriComponentsBuilder.newInstance().path("/api/v1").build().toUri();
@@ -48,10 +58,8 @@ public abstract class BaseIntegrationTest {
     usersPostsUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/posts");
     usersCommentsUriBuilder =
         UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/comments");
-
-    userId = 1L;
-    nonExistentUserId = 1000000L;
-    unauthorizedUserId = 2L;
+    postUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}");
+    postsCommentsUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}/comments");
   }
 
   @DynamicPropertySource

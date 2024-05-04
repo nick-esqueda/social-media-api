@@ -91,7 +91,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
 
     // "updatedAt" will not be updated in the PUT response, since this is a @Transactional test.
     // must validate updatedAt separately, as it gets updated only after the transaction
-    // is committed (after test method end) or *changes are flushed*
+    // is committed (after test method end) or CHANGES ARE FLUSHED
     entityManager.flush();
 
     String resultString =
@@ -204,7 +204,13 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
   @WithMockUser
   @Transactional
   void createPost_ShouldBeReflectedByGetUsersPosts_GivenSuccessfulCreate() throws Exception {
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+
     mockMvc
         .perform(
             post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
