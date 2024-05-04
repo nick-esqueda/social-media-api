@@ -1,5 +1,7 @@
 # TODOs
 
+TODO: add GET /users, GET /posts, GET /comments with filtering, sorting, pagination
+
 TODO: regex validation for firstName & lastName
 
 TODO: return 204 No Content when returning empty list for getUsersPosts/Comments?

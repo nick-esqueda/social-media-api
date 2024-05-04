@@ -8,14 +8,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.jayway.jsonpath.JsonPath;
+import com.nickesqueda.socialmediademo.entity.Post;
+import com.nickesqueda.socialmediademo.repository.PostRepository;
 import java.time.Instant;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PostsControllerIntegrationTest extends BaseIntegrationTest {
+
+  @Autowired private PostRepository postRepository;
 
   private final String updatePostRequestJson =
       """
@@ -82,17 +87,38 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
     // is committed (after test method end) or CHANGES ARE FLUSHED
     entityManager.flush();
 
+    Post postEntity = postRepository.findById(postId).orElseThrow();
+    assertThat(postEntity.getUpdatedAt()).isAfter(postEntity.getCreatedAt());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void updatePost_ShouldBeReflectedByGetPost_GivenSuccessfulUpdate() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            put(postUriBuilder.buildAndExpand(postId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePostRequestJson))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    // flush changes so that "updatedAt" is updated in the DB before querying again.
+    // must be done when using @Transactional.
+    entityManager.flush();
+
     String resultString =
         mockMvc
             .perform(get(postUriBuilder.buildAndExpand(postId).toUri()))
+            .andDo(print())
+            .andExpect(jsonPath("$.content").value(TEST_STRING2))
             .andReturn()
             .getResponse()
             .getContentAsString();
 
-    Instant createdAt = Instant.parse(JsonPath.read(resultString, "$.createdAt"));
-    Instant updatedAt = Instant.parse(JsonPath.read(resultString, "$.updatedAt"));
-
-    assertThat(updatedAt).isAfter(createdAt);
+    Map<String, Instant> auditDates = extractAuditDates(resultString);
+    assertThat(auditDates.get("updatedAt")).isAfter(auditDates.get("createdAt"));
   }
 
   @Test
@@ -189,7 +215,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(1)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
 
     mockMvc

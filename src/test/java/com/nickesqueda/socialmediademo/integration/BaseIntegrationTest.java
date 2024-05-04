@@ -1,10 +1,17 @@
 package com.nickesqueda.socialmediademo.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import jakarta.persistence.EntityManager;
 import java.net.URI;
+import java.time.Instant;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -59,7 +66,8 @@ public abstract class BaseIntegrationTest {
     usersCommentsUriBuilder =
         UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/comments");
     postUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}");
-    postsCommentsUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}/comments");
+    postsCommentsUriBuilder =
+        UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}/comments");
   }
 
   @DynamicPropertySource
@@ -67,5 +75,11 @@ public abstract class BaseIntegrationTest {
     dynamicPropertyRegistry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
     dynamicPropertyRegistry.add("spring.datasource.username", mySQLContainer::getUsername);
     dynamicPropertyRegistry.add("spring.datasource.password", mySQLContainer::getPassword);
+  }
+
+  Map<String, Instant> extractAuditDates(String jsonString) {
+    Instant createdAt = Instant.parse(JsonPath.read(jsonString, "$.createdAt"));
+    Instant updatedAt = Instant.parse(JsonPath.read(jsonString, "$.updatedAt"));
+    return Map.of("createdAt", createdAt, "updatedAt", updatedAt);
   }
 }

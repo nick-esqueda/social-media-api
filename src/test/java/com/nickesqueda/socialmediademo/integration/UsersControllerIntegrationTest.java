@@ -8,14 +8,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.jayway.jsonpath.JsonPath;
+import com.nickesqueda.socialmediademo.entity.UserEntity;
+import com.nickesqueda.socialmediademo.repository.UserRepository;
 import java.time.Instant;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UsersControllerIntegrationTest extends BaseIntegrationTest {
+
+  @Autowired private UserRepository userRepository;
 
   private final String updateUserRequestJson =
       """
@@ -94,17 +99,41 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
     // is committed (after test method end) or CHANGES ARE FLUSHED
     entityManager.flush();
 
-    String resultString =
+    UserEntity userEntity = userRepository.findById(userId).orElseThrow();
+    assertThat(userEntity.getUpdatedAt()).isAfter(userEntity.getCreatedAt());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void updateUser_ShouldBeReflectedByGetUser_GivenSuccessfulUpdate() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            put(userUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateUserRequestJson))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    // flush changes so that "updatedAt" is updated in the DB before querying again.
+    // must be done when using @Transactional.
+    entityManager.flush();
+
+    String result =
         mockMvc
             .perform(get(userUriBuilder.buildAndExpand(userId).toUri()))
+            .andDo(print())
+            .andExpect(jsonPath("$.id").value(userId))
+            .andExpect(jsonPath("$.username").value(TEST_USERNAME))
+            .andExpect(jsonPath("$.firstName").value(TEST_STRING))
+            .andExpect(jsonPath("$.lastName").value(TEST_STRING))
             .andReturn()
             .getResponse()
             .getContentAsString();
 
-    Instant createdAt = Instant.parse(JsonPath.read(resultString, "$.createdAt"));
-    Instant updatedAt = Instant.parse(JsonPath.read(resultString, "$.updatedAt"));
-
-    assertThat(updatedAt).isAfter(createdAt);
+    Map<String, Instant> auditDates = extractAuditDates(result);
+    assertThat(auditDates.get("updatedAt")).isAfter(auditDates.get("createdAt"));
   }
 
   @Test
@@ -144,9 +173,9 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
         .perform(
-        put(userUriBuilder.buildAndExpand(userId).toUri())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(updateUserRequestJson))
+            put(userUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateUserRequestJson))
         .andDo(print())
         .andExpect(status().isUnauthorized());
   }
