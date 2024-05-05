@@ -1,6 +1,9 @@
 package com.nickesqueda.socialmediademo.integration;
 
 import com.jayway.jsonpath.JsonPath;
+import com.nickesqueda.socialmediademo.repository.CommentRepository;
+import com.nickesqueda.socialmediademo.repository.PostRepository;
+import com.nickesqueda.socialmediademo.repository.UserRepository;
 import com.nickesqueda.socialmediademo.security.AuthUtils;
 import jakarta.persistence.EntityManager;
 import java.net.URI;
@@ -25,6 +28,9 @@ public abstract class BaseIntegrationTest {
   static final MySQLContainer<?> mySQLContainer;
   @Autowired MockMvc mockMvc;
   @Autowired EntityManager entityManager;
+  @Autowired UserRepository userRepository;
+  @Autowired PostRepository postRepository;
+  @Autowired CommentRepository commentRepository;
   @MockBean AuthUtils authUtils;
   static URI baseUri;
   static UriComponentsBuilder userUriBuilder;

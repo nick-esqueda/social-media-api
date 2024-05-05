@@ -9,18 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.nickesqueda.socialmediademo.entity.Post;
-import com.nickesqueda.socialmediademo.repository.PostRepository;
 import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PostsControllerIntegrationTest extends BaseIntegrationTest {
-
-  @Autowired private PostRepository postRepository;
 
   @Test
   void getPost_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
@@ -150,6 +146,25 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void updatePost_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    String postBeforeRequest = postRepository.findById(postId).orElseThrow().toString();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(
+            put(postUriBuilder.buildAndExpand(postId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatePostRequestJson))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+    String postAfterRequest = postRepository.findById(postId).orElseThrow().toString();
+
+    assertThat(postBeforeRequest).isEqualTo(postAfterRequest);
   }
 
   @Test
@@ -322,6 +337,22 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
+  void deletePost_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    long numPostsBeforeRequest = postRepository.count();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(delete(postUriBuilder.buildAndExpand(postId).toUri()))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+    long numPostsAfterRequest = postRepository.count();
+
+    assertThat(numPostsBeforeRequest).isEqualTo(numPostsAfterRequest);
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
   void deletePost_ShouldReturn404WithErrorResponse_GivenPostDoesNotExist() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
@@ -389,6 +420,22 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deletePostsComments_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    int numPostsCommentsBeforeRequest = commentRepository.findByPostId(postId).size();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(delete(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+    int numPostsCommentsAfterRequest = commentRepository.findByPostId(postId).size();
+
+    assertThat(numPostsCommentsBeforeRequest).isEqualTo(numPostsCommentsAfterRequest);
   }
 
   @Test

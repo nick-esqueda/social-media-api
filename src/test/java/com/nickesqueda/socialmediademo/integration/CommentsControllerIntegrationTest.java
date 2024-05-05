@@ -10,18 +10,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.jayway.jsonpath.JsonPath;
 import com.nickesqueda.socialmediademo.entity.Comment;
-import com.nickesqueda.socialmediademo.repository.CommentRepository;
 import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 public class CommentsControllerIntegrationTest extends BaseIntegrationTest {
-
-  @Autowired private CommentRepository commentRepository;
 
   @Test
   void getComment_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
@@ -149,6 +145,25 @@ public class CommentsControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
+  void updateComment_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    String commentBeforeRequest = commentRepository.findById(commentId).orElseThrow().toString();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(
+            put(commentUriBuilder.buildAndExpand(commentId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateCommentRequestJson))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+    String commentAfterRequest = commentRepository.findById(commentId).orElseThrow().toString();
+
+    assertThat(commentBeforeRequest).isEqualTo(commentAfterRequest);
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
   void updateComment_ShouldReturn404WithErrorResponse_GivenCommentDoesNotExist() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
@@ -244,6 +259,21 @@ public class CommentsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(delete(commentUriBuilder.buildAndExpand(commentId).toUri()))
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteComment_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    long numCommentsBeforeRequest = commentRepository.count();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(delete(commentUriBuilder.buildAndExpand(commentId).toUri()))
+        .andExpect(status().isForbidden());
+    long numCommentsAfterRequest = commentRepository.count();
+
+    assertThat(numCommentsBeforeRequest).isEqualTo(numCommentsAfterRequest);
   }
 
   @Test

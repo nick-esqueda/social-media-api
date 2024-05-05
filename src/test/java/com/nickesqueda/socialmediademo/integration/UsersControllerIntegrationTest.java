@@ -9,18 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.nickesqueda.socialmediademo.entity.UserEntity;
-import com.nickesqueda.socialmediademo.repository.UserRepository;
 import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 public class UsersControllerIntegrationTest extends BaseIntegrationTest {
-
-  @Autowired private UserRepository userRepository;
 
   @Test
   void getUser_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
@@ -163,6 +159,25 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
+  void updateUser_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    String userBeforeRequest = userRepository.findById(userId).orElseThrow().toString();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(
+            put(userUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateUserRequestJson))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+    String userAfterRequest = userRepository.findById(userId).orElseThrow().toString();
+
+    assertThat(userBeforeRequest).isEqualTo(userAfterRequest);
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
   void updateUser_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
     mockMvc
@@ -295,6 +310,25 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   @WithMockUser
   @Transactional
+  void createPost_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    long numPostsBeforeRequest = postRepository.count();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(
+            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostRequestJson))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+    long numPostsAfterRequest = postRepository.count();
+
+    assertThat(numPostsBeforeRequest).isEqualTo(numPostsAfterRequest);
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
   void createPost_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
     mockMvc
@@ -357,7 +391,24 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
     mockMvc
         .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersPosts_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    int numUsersPostsBeforeRequest = postRepository.findByUserId(userId).size();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(delete(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
         .andExpect(status().isForbidden());
+    int numUsersPostsAfterRequest = postRepository.findByUserId(userId).size();
+
+    assertThat(numUsersPostsBeforeRequest).isEqualTo(numUsersPostsAfterRequest);
   }
 
   @Test
@@ -447,6 +498,22 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void deleteUsersComments_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
+    int numUsersCommentsBeforeRequest = commentRepository.findByUserId(userId).size();
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
+
+    mockMvc
+        .perform(delete(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isForbidden());
+    int numUsersCommentsAfterRequest = commentRepository.findByUserId(userId).size();
+
+    assertThat(numUsersCommentsBeforeRequest).isEqualTo(numUsersCommentsAfterRequest);
   }
 
   @Test
