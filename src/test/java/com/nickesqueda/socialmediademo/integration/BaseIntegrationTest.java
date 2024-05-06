@@ -33,6 +33,8 @@ public abstract class BaseIntegrationTest {
   @Autowired CommentRepository commentRepository;
   @MockBean AuthUtils authUtils;
   static URI baseUri;
+  static URI registerUserUri;
+  static URI passwordLoginUri;
   static UriComponentsBuilder userUriBuilder;
   static UriComponentsBuilder usersPostsUriBuilder;
   static UriComponentsBuilder usersCommentsUriBuilder;
@@ -63,6 +65,8 @@ public abstract class BaseIntegrationTest {
     nonExistentCommentId = 1000000L;
 
     baseUri = UriComponentsBuilder.newInstance().path("/api/v1").build().toUri();
+    registerUserUri = UriComponentsBuilder.fromUri(baseUri).path("/auth/register").build().toUri();
+    passwordLoginUri = UriComponentsBuilder.fromUri(baseUri).path("/auth/login").build().toUri();
     userUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}");
     usersPostsUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/users/{userId}/posts");
     usersCommentsUriBuilder =

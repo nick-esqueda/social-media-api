@@ -25,7 +25,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
-        .andExpect(jsonPath("$.username").value(TEST_USERNAME));
+        .andExpect(jsonPath("$.username").value(USER1_USERNAME));
   }
 
   @Test
@@ -50,7 +50,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
-        .andExpect(jsonPath("$.username").value(TEST_USERNAME))
+        .andExpect(jsonPath("$.username").value(USER1_USERNAME))
         .andExpect(jsonPath("$.firstName").value(TEST_STRING))
         .andExpect(jsonPath("$.lastName").value(TEST_STRING))
         .andReturn();
@@ -86,7 +86,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
             .perform(get(userUriBuilder.buildAndExpand(userId).toUri()))
             .andDo(print())
             .andExpect(jsonPath("$.id").value(userId))
-            .andExpect(jsonPath("$.username").value(TEST_USERNAME))
+            .andExpect(jsonPath("$.username").value(USER1_USERNAME))
             .andExpect(jsonPath("$.firstName").value(TEST_STRING))
             .andExpect(jsonPath("$.lastName").value(TEST_STRING))
             .andReturn()
