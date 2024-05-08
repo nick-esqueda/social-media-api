@@ -27,13 +27,13 @@ public class UserService {
   }
 
   public UserResponseDto updateUser(@NotNull Long userId, @NotNull UserRequestDto updatedUser) {
+    UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
 
     if (!currentUserId.equals(userId)) {
       throw new UnauthorizedOperationException();
     }
 
-    UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
     modelMapper.map(updatedUser, userEntity);
     userEntity = userRepository.save(userEntity);
 

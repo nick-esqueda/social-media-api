@@ -1,5 +1,9 @@
 # TODOs
 
+TODO: add GET /users, GET /posts, GET /comments with filtering, sorting, pagination
+
+TODO: regex validation for firstName & lastName
+
 TODO: return 204 No Content when returning empty list for getUsersPosts/Comments?
 
 TODO: postman positive tests: verify created Entity is returned when requesting for all parent's records.
@@ -152,6 +156,8 @@ like a chart of likes over time, most popular postEntities, follower chart, etc.
 - Env-specific Configuration
 
 - Swagger API Documentation
+
+- Database migration tool
 
 # Tech Design Notes
 

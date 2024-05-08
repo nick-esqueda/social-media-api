@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     return ErrorResponse.builder().errorMessage(e.getMessage()).build();
   }
 
-  @ResponseStatus(UNAUTHORIZED)
+  @ResponseStatus(FORBIDDEN)
   @ExceptionHandler(UnauthorizedOperationException.class)
   public ErrorResponse handleUnauthorizedOperationException(UnauthorizedOperationException e) {
     return ErrorResponse.builder().errorMessage(e.getMessage()).build();

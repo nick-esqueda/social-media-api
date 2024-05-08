@@ -27,18 +27,6 @@ public class PostsController {
     return postService.getPost(postId);
   }
 
-  @GetMapping("/{postId}/comments")
-  public List<CommentResponseDto> getPostsComments(@PathVariable("postId") Long postId) {
-    return commentService.getPostsComments(postId);
-  }
-
-  @PostMapping("/{postId}/comments")
-  @ResponseStatus(CREATED)
-  public CommentResponseDto createComment(
-      @PathVariable("postId") Long postId, @RequestBody @Valid CommentRequestDto newComment) {
-    return commentService.createComment(postId, newComment);
-  }
-
   @PutMapping("/{postId}")
   public PostResponseDto updatePost(
       @PathVariable("postId") Long postId, @RequestBody @Valid PostRequestDto updatedPost) {
@@ -49,6 +37,18 @@ public class PostsController {
   @ResponseStatus(NO_CONTENT)
   public void deletePost(@PathVariable("postId") Long postId) {
     postService.deletePost(postId);
+  }
+
+  @GetMapping("/{postId}/comments")
+  public List<CommentResponseDto> getPostsComments(@PathVariable("postId") Long postId) {
+    return commentService.getPostsComments(postId);
+  }
+
+  @PostMapping("/{postId}/comments")
+  @ResponseStatus(CREATED)
+  public CommentResponseDto createComment(
+      @PathVariable("postId") Long postId, @RequestBody @Valid CommentRequestDto newComment) {
+    return commentService.createComment(postId, newComment);
   }
 
   @DeleteMapping("/{postId}/comments")

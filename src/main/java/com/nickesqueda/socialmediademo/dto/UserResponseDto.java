@@ -7,9 +7,16 @@ import com.nickesqueda.socialmediademo.model.Gender;
 import jakarta.validation.constraints.*;
 import java.time.Instant;
 import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserResponseDto {
   private Long id;
 

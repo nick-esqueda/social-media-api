@@ -38,6 +38,20 @@ DTOs allow you to decouple your API contract from your database schema, providin
 
 docker network create network-test1 (run once)
 
-docker run --name mysql-test2 --network=network-test1 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=social_media_starter_user -e MYSQL_PASSWORD=password -e MYSQL_DATABASE=social_media_starter -d mysql
+docker run --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password1234 -e MYSQL_USER=social_media_demo_user -e MYSQL_PASSWORD=password5678 -e MYSQL_DATABASE=social_media_demo -d mysql
 
 docker run --name social-media-demo-test3 --network=network-test1 -p 8080:8080 -d social-media-starter:test3
+
+## Decision to use MockMvc for integration tests instead of TestRestTemplate
+
+Using MockMvc tests means a test server doesn't start up, which means faster test execution.
+The only downside is the servlet layer is bypassed. This should be tested with external functional tests, however.
+Can handle the auth/Spring Security layer easier. Don't need to make /auth/login calls for each test method.
+
+@Transactional doesn't working when server starts up:
+@Transactional on the test method do not control the transactions on the server.
+this is because the test method and server are running on different threads.
+this means those transactions will not rollback.
+
+@Transactional is needed in order to have a fresh DB state for each test method.
+It manages each test method as a transaction, and rolls back the DB changes once the test is done.
