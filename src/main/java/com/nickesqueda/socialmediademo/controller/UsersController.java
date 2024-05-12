@@ -37,13 +37,6 @@ public class UsersController {
     return postService.getUsersPosts(userId);
   }
 
-  @PostMapping("/{userId}/posts")
-  @ResponseStatus(CREATED)
-  public PostResponseDto createPost(
-      @PathVariable("userId") Long userId, @RequestBody @Valid PostRequestDto newPost) {
-    return postService.createPost(userId, newPost);
-  }
-
   @DeleteMapping("/{userId}/posts")
   @ResponseStatus(NO_CONTENT)
   public void deleteUsersPosts(@PathVariable("userId") Long userId) {

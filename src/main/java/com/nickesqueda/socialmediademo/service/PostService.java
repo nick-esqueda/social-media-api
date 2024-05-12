@@ -43,13 +43,9 @@ public class PostService {
         .toList();
   }
 
-  public PostResponseDto createPost(@NotNull Long userId, @NotNull PostRequestDto newPost) {
-    UserEntity userEntity = userRepository.retrieveOrElseThrow(userId);
+  public PostResponseDto createPost(@NotNull PostRequestDto newPost) {
     Long currentUserId = authUtils.getCurrentAuthenticatedUserId();
-
-    if (!currentUserId.equals(userId)) {
-      throw new UnauthorizedOperationException();
-    }
+    UserEntity userEntity = userRepository.retrieveOrElseThrow(currentUserId);
 
     Post postEntity = modelMapper.map(newPost, Post.class);
     postEntity.setUser(userEntity);

@@ -135,38 +135,16 @@ class PostServiceTest {
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
     when(postRepository.save(any(Post.class))).thenReturn(postEntityStub);
 
-    PostResponseDto result = postService.createPost(testUserId, postRequestDto);
+    PostResponseDto result = postService.createPost(postRequestDto);
 
     assertThat(result).isEqualTo(expectedPostResponseDto);
   }
 
   @Test
   void createPost_ShouldThrow_GivenNullArgs() {
-    assertThatThrownBy(() -> postService.createPost(null, postRequestDto))
+    assertThatThrownBy(() -> postService.createPost(null))
         .isNotInstanceOf(NullPointerException.class)
         .hasMessageContaining("must not be null");
-
-    assertThatThrownBy(() -> postService.createPost(testUserId, null))
-        .isNotInstanceOf(NullPointerException.class)
-        .hasMessageContaining("must not be null");
-  }
-
-  @Test
-  void createPost_ShouldThrow_GivenUserDoesNotExist() {
-    testUserId = 10000L;
-    when(userRepository.retrieveOrElseThrow(testUserId)).thenThrow(ResourceNotFoundException.class);
-
-    assertThatThrownBy(() -> postService.createPost(testUserId, postRequestDto))
-        .isInstanceOf(ResourceNotFoundException.class);
-  }
-
-  @Test
-  void createPost_ShouldThrow_GivenUnauthorizedUserId() {
-    when(userRepository.retrieveOrElseThrow(testUserId)).thenReturn(userEntityStub);
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
-
-    assertThatThrownBy(() -> postService.createPost(testUserId, postRequestDto))
-        .isInstanceOf(UnauthorizedOperationException.class);
   }
 
   @Test
