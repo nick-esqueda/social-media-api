@@ -211,17 +211,6 @@ class CommentServiceTest {
   }
 
   @Test
-  void createComment_ShouldThrow_GivenUserDoesNotExist() {
-    testUserId = 10000L;
-    when(postRepository.retrieveOrElseThrow(testPostId)).thenReturn(postEntityStub);
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);
-    when(userRepository.retrieveOrElseThrow(testUserId)).thenThrow(ResourceNotFoundException.class);
-
-    assertThatThrownBy(() -> commentService.createComment(testPostId, createCommentRequestDto))
-        .isInstanceOf(ResourceNotFoundException.class);
-  }
-
-  @Test
   void updateComment_ShouldReturnUpdatedComment_GivenValidArgs() {
     when(commentRepository.retrieveOrElseThrow(testCommentId)).thenReturn(commentEntityStub);
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(testUserId);

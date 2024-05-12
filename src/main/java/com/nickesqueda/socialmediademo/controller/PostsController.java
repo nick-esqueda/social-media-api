@@ -22,6 +22,12 @@ public class PostsController {
   private final PostService postService;
   private final CommentService commentService;
 
+  @PostMapping
+  @ResponseStatus(CREATED)
+  public PostResponseDto createPost(@RequestBody @Valid PostRequestDto newPost) {
+    return postService.createPost(newPost);
+  }
+
   @GetMapping("/{postId}")
   public PostResponseDto getPost(@PathVariable("postId") Long postId) {
     return postService.getPost(postId);

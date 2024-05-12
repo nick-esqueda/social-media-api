@@ -19,6 +19,90 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostsControllerIntegrationTest extends BaseIntegrationTest {
 
   @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturnSuccessfulResponse_GivenValidValues() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(allPostsUri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostRequestJson))
+        .andDo(print())
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.content").value(TEST_STRING));
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldBeReflectedByGetUsersPosts_GivenSuccessfulCreate() throws Exception {
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+
+    mockMvc
+        .perform(
+            post(allPostsUri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostRequestJson))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)));
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturn400WithErrorResponse_GivenInvalidData() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(allPostsUri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostBadRequestJson))
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
+  }
+
+  @Test
+  @WithMockUser
+  @Transactional
+  void createPost_ShouldReturnEachValidationError_GivenInvalidData() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(allPostsUri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostBadRequestJson))
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errorDetails", hasSize(1)));
+  }
+
+  @Test
+  // @WithMockUser <- removed to simulate unauthenticated request.
+  @Transactional
+  void createPost_ShouldReturn401_GivenNoAuthentication() throws Exception {
+    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
+    mockMvc
+        .perform(
+            post(allPostsUri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createPostRequestJson))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+  }
+
+  @Test
   void getPost_ShouldReturnSuccessfulResponse_GivenValidId() throws Exception {
     mockMvc
         .perform(get(postUriBuilder.buildAndExpand(postId).toUri()))

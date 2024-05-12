@@ -25,7 +25,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
-        .andExpect(jsonPath("$.username").value(TEST_USERNAME));
+        .andExpect(jsonPath("$.username").value(USER1_USERNAME));
   }
 
   @Test
@@ -50,7 +50,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(userId))
-        .andExpect(jsonPath("$.username").value(TEST_USERNAME))
+        .andExpect(jsonPath("$.username").value(USER1_USERNAME))
         .andExpect(jsonPath("$.firstName").value(TEST_STRING))
         .andExpect(jsonPath("$.lastName").value(TEST_STRING))
         .andReturn();
@@ -86,7 +86,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
             .perform(get(userUriBuilder.buildAndExpand(userId).toUri()))
             .andDo(print())
             .andExpect(jsonPath("$.id").value(userId))
-            .andExpect(jsonPath("$.username").value(TEST_USERNAME))
+            .andExpect(jsonPath("$.username").value(USER1_USERNAME))
             .andExpect(jsonPath("$.firstName").value(TEST_STRING))
             .andExpect(jsonPath("$.lastName").value(TEST_STRING))
             .andReturn()
@@ -203,139 +203,6 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
   void getUsersPosts_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
     mockMvc
         .perform(get(userUriBuilder.buildAndExpand(nonExistentUserId).toUri()))
-        .andDo(print())
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
-  }
-
-  @Test
-  @WithMockUser
-  @Transactional
-  void createPost_ShouldReturnSuccessfulResponse_GivenValidValues() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostRequestJson))
-        .andDo(print())
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.content").value(TEST_STRING));
-  }
-
-  @Test
-  @WithMockUser
-  @Transactional
-  void createPost_ShouldBeReflectedByGetUsersPosts_GivenSuccessfulCreate() throws Exception {
-    mockMvc
-        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
-
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostRequestJson))
-        .andExpect(status().isCreated());
-
-    mockMvc
-        .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)));
-  }
-
-  @Test
-  @WithMockUser
-  @Transactional
-  void createPost_ShouldReturn400WithErrorResponse_GivenInvalidData() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostBadRequestJson))
-        .andDo(print())
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
-  }
-
-  @Test
-  @WithMockUser
-  @Transactional
-  void createPost_ShouldReturnEachValidationError_GivenInvalidData() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostBadRequestJson))
-        .andDo(print())
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.errorDetails", hasSize(1)));
-  }
-
-  @Test
-  // @WithMockUser <- removed to simulate unauthenticated request.
-  @Transactional
-  void createPost_ShouldReturn401_GivenNoAuthentication() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostRequestJson))
-        .andDo(print())
-        .andExpect(status().isUnauthorized());
-  }
-
-  @Test
-  @WithMockUser
-  @Transactional
-  void createPost_ShouldReturn403WithErrorResponse_GivenUnauthorizedUser() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostRequestJson))
-        .andDo(print())
-        .andExpect(status().isForbidden())
-        .andExpect(jsonPath("$.errorMessage").isNotEmpty());
-  }
-
-  @Test
-  @WithMockUser
-  @Transactional
-  void createPost_ShouldNotModifyDb_GivenUnauthorizedUser() throws Exception {
-    long numPostsBeforeRequest = postRepository.count();
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(unauthorizedUserId);
-
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(userId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostRequestJson))
-        .andDo(print())
-        .andExpect(status().isForbidden());
-    long numPostsAfterRequest = postRepository.count();
-
-    assertThat(numPostsBeforeRequest).isEqualTo(numPostsAfterRequest);
-  }
-
-  @Test
-  @WithMockUser
-  @Transactional
-  void createPost_ShouldReturn404WithErrorResponse_GivenUserDoesNotExist() throws Exception {
-    when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
-    mockMvc
-        .perform(
-            post(usersPostsUriBuilder.buildAndExpand(nonExistentUserId).toUri())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(createPostRequestJson))
         .andDo(print())
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.errorMessage").isNotEmpty());
