@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -46,6 +47,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
     return ErrorResponse.builder().errorMessage("Database constraint violated").build();
+  }
+
+  @ResponseStatus(BAD_REQUEST)
+  @ExceptionHandler(BadCredentialsException.class)
+  public ErrorResponse handleBadCredentialsException(BadCredentialsException e) {
+    return ErrorResponse.builder().errorMessage(e.getMessage()).build();
   }
 
   @ResponseStatus(INTERNAL_SERVER_ERROR)
