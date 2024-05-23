@@ -193,7 +193,7 @@ public class CommentsControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc
             .perform(get(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$", hasSize(usersCommentsCount)))
             .andReturn()
             .getResponse()
             .getContentAsString();
@@ -208,7 +208,7 @@ public class CommentsControllerIntegrationTest extends BaseIntegrationTest {
     mockMvc
         .perform(get(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(jsonPath("$", hasSize(usersCommentsCount - 1)));
   }
 
   @Test
@@ -219,7 +219,7 @@ public class CommentsControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc
             .perform(get(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$", hasSize(postsCommentsCount)))
             .andReturn()
             .getResponse()
             .getContentAsString();
@@ -238,7 +238,7 @@ public class CommentsControllerIntegrationTest extends BaseIntegrationTest {
     mockMvc
         .perform(get(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(jsonPath("$", hasSize(postsCommentsCount - 1)));
   }
 
   @Test

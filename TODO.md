@@ -1,5 +1,7 @@
 # TODOs
 
+TODO: only return birthday & phone number if auth.d user and resource are the same user.
+
 TODO: add GET /users, GET /posts, GET /comments with filtering, sorting, pagination
 
 TODO: regex validation for firstName & lastName

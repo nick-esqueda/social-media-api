@@ -1,8 +1,8 @@
 package com.nickesqueda.socialmediademo.model;
 
 public enum Gender {
-  MALE,
-  FEMALE,
+  MAN,
+  WOMAN,
   NON_BINARY,
-  OTHER
+  PREFER_NOT_TO_STATE
 }

@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS posts (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    content VARCHAR(255) NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    updated_at DATETIME(6),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

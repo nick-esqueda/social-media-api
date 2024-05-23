@@ -10,6 +10,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +50,9 @@ public abstract class BaseIntegrationTest {
   static Long nonExistentPostId;
   static Long commentId;
   static Long nonExistentCommentId;
+  static int usersPostsCount;
+  static int usersCommentsCount;
+  static int postsCommentsCount;
 
   static {
     mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:5.7.34")).withReuse(true);
@@ -77,6 +81,13 @@ public abstract class BaseIntegrationTest {
     postsCommentsUriBuilder =
         UriComponentsBuilder.fromUri(baseUri).path("/posts/{postId}/comments");
     commentUriBuilder = UriComponentsBuilder.fromUri(baseUri).path("/comments/{postId}");
+  }
+
+  @BeforeEach
+  void beforeAll() {
+    usersPostsCount = postRepository.findByUserId(userId).size();
+    usersCommentsCount = commentRepository.findByUserId(userId).size();
+    postsCommentsCount = commentRepository.findByPostId(postId).size();
   }
 
   @DynamicPropertySource

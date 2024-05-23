@@ -41,7 +41,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(usersPostsCount)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
 
     mockMvc
@@ -55,7 +55,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)));
+        .andExpect(jsonPath("$", hasSize(usersPostsCount + 1)));
   }
 
   @Test
@@ -288,7 +288,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(postsCommentsCount)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
 
     mockMvc
@@ -303,7 +303,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)));
+        .andExpect(jsonPath("$", hasSize(postsCommentsCount + 1)));
   }
 
   @Test
@@ -380,7 +380,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(usersPostsCount)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
 
     mockMvc
@@ -392,7 +392,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(jsonPath("$", hasSize(usersPostsCount - 1)));
   }
 
   @Test
@@ -467,7 +467,7 @@ public class PostsControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(postsCommentsUriBuilder.buildAndExpand(postId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(postsCommentsCount)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
 
     mockMvc

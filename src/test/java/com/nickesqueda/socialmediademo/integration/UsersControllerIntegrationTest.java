@@ -196,7 +196,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(usersPostsCount)));
   }
 
   @Test
@@ -225,7 +225,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
   void deleteUsersPosts_ShouldBeReflectedByGetUsersPosts_GivenSuccessfulDelete() throws Exception {
     mockMvc
         .perform(get(usersPostsUriBuilder.buildAndExpand(userId).toUri()))
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(usersPostsCount)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
 
     mockMvc
@@ -296,7 +296,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(usersCommentsCount)));
   }
 
   @Test
@@ -328,7 +328,7 @@ public class UsersControllerIntegrationTest extends BaseIntegrationTest {
     mockMvc
         .perform(get(usersCommentsUriBuilder.buildAndExpand(userId).toUri()))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)));
+        .andExpect(jsonPath("$", hasSize(usersCommentsCount)));
     when(authUtils.getCurrentAuthenticatedUserId()).thenReturn(userId);
 
     mockMvc
